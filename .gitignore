@@ -10,6 +10,8 @@ local.properties
 .settings/
 .loadpath
 .recommenders
+IP
+.cproject
 
 # External tool builders
 .externalToolBuilders/
