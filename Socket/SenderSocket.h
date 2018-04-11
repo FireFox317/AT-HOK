@@ -8,7 +8,7 @@
 #ifndef SENDERSOCKET_H_
 #define SENDERSOCKET_H_
 
-#include <string>
+
 
 
 #ifdef _WIN32
@@ -23,6 +23,8 @@
 #include <arpa/inet.h> 		//inet_addr
 #include <unistd.h>  // needed to close socket file descriptor
 #endif
+
+#include <string>
 
 class SenderSocket {
 public:

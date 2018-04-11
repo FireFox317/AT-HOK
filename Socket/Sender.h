@@ -32,7 +32,7 @@ namespace Sender{
 	}
 
 	void loop(){
-		SenderSocket senderSocket(IP, PORT, GROUP);
+		SenderSocket senderSocket(IP, PORT, MULTIGROUP);
 		while(1){
 			if(wantToSend){
 				std::lock_guard<std::mutex> lt(message_mutex);
