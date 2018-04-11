@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include <thread>
+#include <map>
 
 
 #include "Socket/Sender.h"
@@ -16,13 +17,17 @@
 
 #include "Socket/ip_config.h"
 
+#include "Message.h"
+
 BlockingQueue< std::string > q;
 
 int main(void){
 	std::thread send_thread(Sender::loop);
 	std::thread receiver_thread(receivePacket, IP, PORT, MULTIGROUP, &q); //start network receiving thread
 
-	Sender::sendMessage("Type: Routing\nRequest");
+	Message mes("192.168.5.2","Hello!");
+
+	Sender::sendMessage(mes.toString());
 
 	while (1) {
 		std::string message = q.pop();
@@ -32,6 +37,7 @@ int main(void){
 		std::cout << "Received message: " << message << std::endl;
 	}
 
+	Sender::closeSocket();
 	send_thread.join();
 	receiver_thread.join();
 

@@ -128,7 +128,7 @@ int receivePacket(std::string ip, int port, std::string group, BlockingQueue<std
 			char str[INET_ADDRSTRLEN];
 			inet_ntop(AF_INET, &(peer_address.sin_addr), str, INET_ADDRSTRLEN);
 			std::string receive_ip(str);
-			//std::cout << "Received IP: " << receive_ip << std::endl;
+			std::cout << "Received IP: " << receive_ip << std::endl;
 			if(receive_ip != ip){
 				// not received own packet
 				char * message = new char[len+1];

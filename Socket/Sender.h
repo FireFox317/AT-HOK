@@ -33,19 +33,14 @@ namespace Sender{
 
 	void loop(){
 		SenderSocket senderSocket(IP, PORT, MULTIGROUP);
-		while(1){
+		while(!finished){
 			if(wantToSend){
 				std::lock_guard<std::mutex> lt(message_mutex);
 				senderSocket.sendMessage(message);
 				wantToSend = false;
 			}
-			if(finished){
-				break;
-			}
 		}
-
 	}
-
 }
 
 
