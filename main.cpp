@@ -5,11 +5,13 @@
  *      Author: timon
  */
 
+
 #include <iostream>
 
 int main(void){
-	std::cout << "hoi" << std::endl;
+	std::cout << "test" << std::endl;
 	return 0;
 }
+
 
 
