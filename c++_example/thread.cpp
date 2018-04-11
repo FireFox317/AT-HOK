@@ -14,11 +14,14 @@
 BlockingQueue< std::string > q;
 
 int main() {
-	std::thread sender(sendPacket, IP, PORT, GROUP, "Hi, this is timon"); //start networking sending thread
+	std::thread sender(sendPacket, IP, PORT, GROUP, "Type: Routing\nRequest"); //start networking sending thread
 	std::thread receiver(receivePacket, IP, PORT, GROUP, &q); //start network receiving thread
 	
 	while (1) {
 		std::string message = q.pop();
+		if(message == "Type: Routing\nRequest"){
+			std::thread sender(sendPacket, IP, PORT, GROUP, "Type: Routing\nResponse");
+		}
 		std::cout << "Received message: " << message << std::endl;
 	}
 

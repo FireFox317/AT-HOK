@@ -80,7 +80,7 @@ void sendPacket(std::string ip, int port, std::string group, std::string data) {
 	multicastSender.sin_port = htons(port);
 
 	//send a packet every 5 seconds
-	while(1){
+	//while(1){
 		int len = data.size();
 		char * c_data = new char[len]; //allocate some memory for our data
 		memcpy(c_data, data.c_str(), len); // write string into packet data
@@ -88,11 +88,11 @@ void sendPacket(std::string ip, int port, std::string group, std::string data) {
 			    perror("Sendto failed");
 		free(c_data);
 		printf("Packet of size %d sent!\n", len);
-#ifdef _WIN32
-		Sleep(5 * 1000); //sleep for 5 seconds
-#elif __linux__
-		sleep(5); //sleep for 5 seconds
-#endif
-	}
+//#ifdef _WIN32
+//		Sleep(5 * 1000); //sleep for 5 seconds
+//#elif __linux__
+//		sleep(5); //sleep for 5 seconds
+//#endif
+	//}
 	return;
 }
