@@ -2,7 +2,7 @@
  * chat.h
  *
  *  Created on: Apr 11, 2018
- *      Authors: Ivo & Niek
+ *      Author: ubuntu
  */
 
 #include <iostream>
@@ -15,12 +15,14 @@
 #ifndef CHAT_H_
 #define CHAT_H_
 
+
+
 class chat
 {
 protected:
-    std::string sentMessage;
-    std::string receivedMessage;
-    
+    	std::string sentMessage;
+    	std::string receivedMessage;
+
 public:
     chat();
     virtual ~chat();

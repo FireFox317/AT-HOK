@@ -50,8 +50,11 @@ void chat::printReceivedMessage()
 {
     std::cout << receivedMessage << std::endl;
 }
+<<<<<<< HEAD
 
 void chat::printSentMessage()
 {
     std::cout << sentMessage << std::endl;
 }
+=======
+>>>>>>> ed11fae19f00a863adb2e9c327ca2f9c1c2ad35a
