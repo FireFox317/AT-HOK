@@ -20,7 +20,12 @@
 
 
 
-    
+class chat
+{
+protected:
+    	std::string sentMessage;
+    	std::string receivedMessage;
+
 public:
     chat();
     virtual ~chat();
