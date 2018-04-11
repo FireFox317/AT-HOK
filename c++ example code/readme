@@ -1,6 +1,0 @@
-On Linux compile with:
-g++ -std=c++0x thread.cpp receiver.cpp sender.cpp -lpthread
-
-On Windows visual studio should figure it out
-
-Don't forget to set the correct IP address when testing!
