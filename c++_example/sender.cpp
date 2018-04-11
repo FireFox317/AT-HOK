@@ -45,7 +45,7 @@ void sendPacket(std::string ip, int port, std::string group, std::string data) {
 	 * This allows you to receive multicast packets you yourself have send.
 	 * Obviously enabling this is not really useful for anything but testing
 	 */
-	char loop = 1;
+	char loop = 0;
 	if(setsockopt(sock, IPPROTO_IP, IP_MULTICAST_LOOP, (char *)&loop, sizeof(loop)) < 0){
 		perror("Failed to disable loopback");
 		#ifdef _WIN32
