@@ -4,7 +4,8 @@
 #include <string>
 #include <cstring>
 #include <iostream>
-#include "BlockingQueue.h"
+
+#include "../Socket/BlockingQueue.h"
 
 #ifdef _WIN32
 #include <winsock2.h>
@@ -139,9 +140,6 @@ int receivePacket(std::string ip, int port, std::string group, BlockingQueue<std
 			} else {
 				std::cout << "Received own message!" << std::endl;
 			}
-
-
-
 
 		}
 	}
