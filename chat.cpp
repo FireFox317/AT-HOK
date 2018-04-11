@@ -17,6 +17,17 @@ chat::~chat()
 
 }
 
+void chat::setSentMessage(std::string message)
+{
+    sentMessage = message;
+}
+
+
+void chat::sendsentMessage(std::string ip, int port, std::string group)
+{
+    std::thread sender(sentMessage, ip, port, group);
+}
+
 void chat::setReceivedMessage(std::string message)
 {
     receivedMessage = message;
