@@ -124,12 +124,25 @@ int receivePacket(std::string ip, int port, std::string group, BlockingQueue<std
 		// Receive packet and put its contents in data, recvfrom will block until a packet for this socket has been received
 		len = recvfrom(rsock, data, 1500, 0, (struct sockaddr *) &peer_address, &peer_address_len);
 		if(len > 0){
-			char * message = new char[len+1];
-			message[len] = '\0'; //set string termination char at end
-			memcpy(message, data, len);
-			q->push( std::string(message) );
-			delete message;
-			//printf("Packet of size %d received!\nData: %s\n\n", len, message);
+			char str[INET_ADDRSTRLEN];
+			inet_ntop(AF_INET, &(peer_address.sin_addr), str, INET_ADDRSTRLEN);
+			std::string receive_ip(str);
+			//std::cout << "Received IP: " << receive_ip << std::endl;
+			if(receive_ip != ip){
+				// not received own packet
+				char * message = new char[len+1];
+				message[len] = '\0'; //set string termination char at end
+				memcpy(message, data, len);
+				q->push( std::string(message) );
+				delete message;
+				//printf("Packet of size %d received!\nData: %s\n\n", len, message);
+			} else {
+				std::cout << "Received own message!" << std::endl;
+			}
+
+
+
+
 		}
 	}
 
