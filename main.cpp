@@ -2,7 +2,7 @@
  * main.cpp
  *
  *  Created on: Apr 10, 2018
- *      Author: timon en niek
+ *      Author: timon
  */
 
 #include <iostream>
