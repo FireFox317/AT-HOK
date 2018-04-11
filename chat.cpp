@@ -42,7 +42,7 @@ void chat::receiver(std::string ip, int port, std::string group)
 
 	while (1) {
 		std::string message = q.pop();
-		std::cout << "   -" << message << std::endl;
+		std::cout << message << std::endl;
 	}
 }
 

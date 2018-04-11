@@ -17,15 +17,18 @@ int main(void)
 {
 	chat groupChat;
 	std::thread receiverThread (groupChat.receiver, IP, PORT, GROUP);
-	bool quit = true;
-	while(quit)
+	bool quit = false;
+	while(!quit)
 	{
 		std::string message;
-		std::cin >> message;
+		std::getline(std::cin, message);
+		if (message == ".")
+		{
+			quit = true;
+			break;
+		}
 		groupChat.setSentMessage(message);
 		groupChat.sendSentMessage(IP, PORT, GROUP);
-		std::cout << "Send another message? (1/0)" << std::endl;
-		std::cin >> quit;
 	}
 	std::cout << "Goodbye! :)" << std::endl;
 	receiverThread.detach();
