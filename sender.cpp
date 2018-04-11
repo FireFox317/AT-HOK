@@ -16,7 +16,7 @@
 #include <unistd.h>  // needed to close socket file descriptor
 #endif
 
-void sendPacket(std::string ip, int port, std::string group) {
+void sendPacket(std::string ip, int port, std::string group, std::string message) {
 	/**
 	 * Create a new datagram socket 
 	 */
@@ -79,22 +79,13 @@ void sendPacket(std::string ip, int port, std::string group) {
 	inet_pton(AF_INET, group.c_str(), &multicastSender.sin_addr.s_addr);
 	multicastSender.sin_port = htons(port);
 
-	//send a packet every 5 seconds
-	while(1){
-		char * data = new char[10]; //allocate some memory for our data
-		int len;
-		len = 10;
-		std::string bla = "blablabla!"; // example string of size 10 to broadcast
-		memcpy(data, bla.c_str(), 10); // write string into packet data
-		if (sendto(sock, data, len, 0, (struct sockaddr*)&multicastSender,sizeof(struct sockaddr_in)) < 0) //sent a UDP packet containing our example data
-			    perror("Sendto failed");
-		free(data);
-		printf("Packet of size %d sent!\n", len);
-#ifdef _WIN32
-		Sleep(5 * 1000); //sleep for 5 seconds
-#elif __linux__
-		sleep(5); //sleep for 5 seconds
-#endif
-	}
+	int len;
+	len = message.size();
+	char * data = new char[len]; //allocate some memory for our data
+	memcpy(data, message.c_str(), len); // write string into packet data
+	if (sendto(sock, data, len, 0, (struct sockaddr*)&multicastSender,sizeof(struct sockaddr_in)) < 0) //sent a UDP packet containing our example data
+		    perror("Sendto failed");
+	free(data);
+
 	return;
 }

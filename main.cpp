@@ -15,17 +15,19 @@
  
 int main(void)
 {
-	std::cout << "hoi" << std::endl;
 	chat groupChat;
 	std::thread receiverThread (groupChat.receiver, IP, PORT, GROUP);
-	std::string message;
-	std::cout << "What message would you like to send?" << std::endl;
-	std::cin >> message;
-	groupChat.setSentMessage(message);
-	groupChat.sendSentMessage(IP, PORT, GROUP);
-	groupChat.printSentMessage();
-	groupChat.setReceivedMessage("Dit bevat veelsteveel hoi's");
-	groupChat.printReceivedMessage();
-	std::cout << "hey" << std::endl;
+	bool quit = true;
+	while(quit)
+	{
+		std::string message;
+		std::cin >> message;
+		groupChat.setSentMessage(message);
+		groupChat.sendSentMessage(IP, PORT, GROUP);
+		std::cout << "Send another message? (1/0)" << std::endl;
+		std::cin >> quit;
+	}
+	std::cout << "Goodbye! :)" << std::endl;
+	receiverThread.detach();
 	return 0;
 }
