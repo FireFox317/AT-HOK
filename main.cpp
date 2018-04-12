@@ -43,26 +43,41 @@ int main(void){
 
 	Sender::sendMessage(mes.toString());
 
-	while (1) {
+	std::string timeStampStorage;
+
+	bool loop = true;
+	while (loop) {
 		std::string message = q.pop();
 
 		std::vector<std::string> vec;
 		split(message,"/",vec);
 
-		if(vec[1] == IP){
+		std::string sourceIP = vec[0];
+		std::string destinationIP = vec[1];
+		std::string timeStamp = vec[2];
+		std::string data = vec[3];
+
+		if(destinationIP == IP){
 			// Received a message that is for us.
 
-		} else if(vec[0] == IP){
+		} else if(sourceIP == IP){
 			// Received own message
 
 		} else {
+			// Retransmit message if we did not received it before
+			if(timeStampStorage == timeStamp){
 
-			Sender::sendMessage(message);
+			} else {
+				timeStampStorage = timeStamp;
+				Sender::sendMessage(message);
+			}
 		}
 		std::cout << "Received message: " << message << std::endl;
+//		loop = false;
 	}
 
 	Sender::closeSocket();
+	closeReceiver();
 	send_thread.join();
 	receiver_thread.join();
 
