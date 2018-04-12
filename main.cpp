@@ -14,8 +14,7 @@
 
 #include "Socket/Sender.h"
 #include "Message.h"
-#include "Socket/ReceiverThread.h"
-
+#include "Socket/Receiver.h"
 
 
 
@@ -41,10 +40,10 @@ int main(void){
 
 
 	Sender::closeSocket();
-	closeReceiver();
+	Receiver::closeSocket();
 
 	send_thread.join();
-	receive_thread.detach();
+	receive_thread.join();
 
 	return 0;
 }

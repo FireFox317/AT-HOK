@@ -5,18 +5,20 @@
  *      Author: timon
  */
 
-#ifndef SOCKET_RECEIVERTHREAD_H_
-#define SOCKET_RECEIVERTHREAD_H_
+#ifndef SOCKET_RECEIVER_H_
+#define SOCKET_RECEIVER_H_
 
 #include "ip_config.h"
 #include "BlockingQueue.h"
 #include "Sender.h"
 #include "ReceiverSocket.h"
 
+
 #include <thread>
-#include "receiverTest.h"
 
 namespace Receiver{
+
+	ReceiverSocket* receiverSocket;
 
 	void split(const std::string& s, const char* delim, std::vector<std::string>& v) {
 		auto i = 0;
@@ -32,19 +34,14 @@ namespace Receiver{
 	}
 
 	void closeSocket(){
-
+		receiverSocket->closeSocket();
+		delete receiverSocket;
 	}
 
-	void loop(){
-		BlockingQueue< std::string > q;
-		ReceiverSocket receiverSocket(IP, PORT, MULTIGROUP, &q);
-		receiverSocket.receive();
-	}
-
-
+	void mainReceiveLoop(BlockingQueue< std::string > *q)
 	{
 		while (1) {
-			std::string message = q.pop();
+			std::string message = q->pop();
 
 			std::vector<std::string> vec;
 			split(message,"/",vec);
@@ -71,14 +68,19 @@ namespace Receiver{
 					std::cout << "Retransmitted the message" << std::endl;
 				}
 			}
-
 		}
-
-
-
 	}
+
+	void loop(){
+		BlockingQueue< std::string > q;
+		std::thread receiver_thread(mainReceiveLoop, &q);
+		receiverSocket = new ReceiverSocket(IP, PORT, MULTIGROUP, &q);
+		receiverSocket->receive();
+		receiver_thread.detach();
+	}
+
 }
 
 
 
-#endif /* SOCKET_RECEIVERTHREAD_H_ */
+#endif /* SOCKET_RECEIVER_H_ */
