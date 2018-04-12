@@ -22,7 +22,7 @@ int main(void)
 	{
 		std::string message;
 		std::getline(std::cin, message);
-		if (message == ".")
+		if (message == "quit")
 		{
 			quit = true;
 			break;

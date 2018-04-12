@@ -42,7 +42,8 @@ void chat::receiver(std::string ip, int port, std::string group)
 
 	while (1) {
 		std::string message = q.pop();
-		std::cout << message << std::endl;
+		std::cout << std::left << "          ";
+		std::cout.width(40); std::cout << std::right << message << std::endl;
 	}
 }
 

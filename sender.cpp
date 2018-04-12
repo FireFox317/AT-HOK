@@ -84,8 +84,9 @@ void sendPacket(std::string ip, int port, std::string group, std::string message
 	char * data = new char[len]; //allocate some memory for our data
 	memcpy(data, message.c_str(), len); // write string into packet data
 	if (sendto(sock, data, len, 0, (struct sockaddr*)&multicastSender,sizeof(struct sockaddr_in)) < 0) //sent a UDP packet containing our example data
-		    perror("Sendto failed");
+	    perror("Sendto failed");
 	free(data);
+
 
 	return;
 }
