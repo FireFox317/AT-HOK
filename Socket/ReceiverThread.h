@@ -10,10 +10,10 @@
 
 #include "ip_config.h"
 #include "BlockingQueue.h"
-#include "receiver.h"
 #include "Sender.h"
 
 #include <thread>
+#include "receiverTest.h"
 
 namespace Receiver{
 
