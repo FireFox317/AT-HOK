@@ -24,8 +24,10 @@ namespace Sender{
 	std::mutex message_mutex;
 
 	void sendMessage(std::string data){
-		std::lock_guard<std::mutex> lk(message_mutex);
-		message = data;
+		{
+			std::lock_guard<std::mutex> lk(message_mutex);
+			message = data;
+		}
 		wantToSend.notify_one();
 	}
 
@@ -40,7 +42,7 @@ namespace Sender{
 		while(!finished){
 			std::unique_lock<std::mutex> lk(message_mutex);
 			wantToSend.wait(lk);
-			if (finished) {
+			if(finished){
 				break;
 			}
 			senderSocket.sendMessage(message);

@@ -74,7 +74,7 @@ int main(void){
 			}
 		}
 		std::cout << "Received message: " << message << std::endl;
-//		loop = false;
+		loop = false;
 	}
 
 	Sender::closeSocket();
