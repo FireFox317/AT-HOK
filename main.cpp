@@ -45,21 +45,33 @@ int main(void){
 
 	while (1) {
 		std::string message = q.pop();
+		std::cout << "Message: " << message << std::endl;
 
 		std::vector<std::string> vec;
 		split(message,"/",vec);
 
-		if(vec[1] == IP){
+		std::string sourceIP = vec[0];
+		std::string destinationIP = vec[1];
+		std::string timeStamp = vec[2];
+		std::string data = vec[3];
+
+		std::string timeStampTemp;
+
+		if(destinationIP == IP){
 			// Received a message that is for us.
 
-		} else if(vec[0] == IP){
+		} else if(sourceIP == IP){
 			// Received own message
 
 		} else {
+			if(timeStamp == timeStampTemp){
 
-			Sender::sendMessage(message);
+			} else {
+				timeStampTemp = timeStamp;
+				Sender::sendMessage(message);
+			}
+
 		}
-		std::cout << "Received message: " << message << std::endl;
 	}
 
 	Sender::closeSocket();
