@@ -19,7 +19,7 @@
 
 namespace Sender{
 	std::condition_variable wantToSend;
-	bool finished = false;
+	std::atomic<bool> finished(false);
 	std::string message;
 	std::mutex message_mutex;
 
@@ -39,7 +39,10 @@ namespace Sender{
 
 		while(!finished){
 			std::unique_lock<std::mutex> lk(message_mutex);
-			wantToSend.wait(lk, []{return !finished;});
+			wantToSend.wait(lk);
+			if (finished) {
+				break;
+			}
 			senderSocket.sendMessage(message);
 			lk.unlock();
 		}

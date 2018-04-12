@@ -48,6 +48,7 @@ int main(void){
 	bool loop = true;
 	while (loop) {
 		std::string message = q.pop();
+		std::cout << "Message: " << message << std::endl;
 
 		std::vector<std::string> vec;
 		split(message,"/",vec);
@@ -69,7 +70,7 @@ int main(void){
 
 			} else {
 				timeStampStorage = timeStamp;
-				Sender::sendMessage(message);
+				//Sender::sendMessage(message);
 			}
 		}
 		std::cout << "Received message: " << message << std::endl;

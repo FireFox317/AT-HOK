@@ -124,6 +124,7 @@ int receivePacket(std::string ip, int port, std::string group, BlockingQueue<std
 	while (1) {
 		// Receive packet and put its contents in data, recvfrom will block until a packet for this socket has been received
 		len = recvfrom(rsock, data, 1500, 0, (struct sockaddr *) &peer_address, &peer_address_len);
+		std::cout << "Len: " << len << std::endl;
 		if(len == -1){
 			return 0;
 		}

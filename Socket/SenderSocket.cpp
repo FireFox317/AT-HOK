@@ -90,7 +90,7 @@ bool SenderSocket::sendMessage(std::string data){
 		return false;
 	}
 	free(c_data);
-	//std::cout << "Packet send! Size: " << len << " Data: " << data << std::endl;
+	std::cout << "Packet send! Size: " << len << " Data: " << data << std::endl;
 	return true;
 }
 
