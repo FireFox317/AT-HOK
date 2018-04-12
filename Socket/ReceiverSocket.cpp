@@ -11,18 +11,6 @@
 #include "ip_config.h"
 #include <cstring>
 
-#ifdef _WIN32
-#include <winsock2.h>
-#include <ws2tcpip.h>
-//#define _WINSOCK_DEPRECATED_NO_WARNINGS
-#pragma comment(lib, "Ws2_32.lib")
-#pragma comment (lib, "Mswsock.lib")
-#pragma comment (lib, "AdvApi32.lib")
-#elif __linux__
-#include <sys/socket.h>    	//socket
-#include <arpa/inet.h> 		//inet_addr
-#include <unistd.h>  // needed to close socket file descriptor
-#endif
 
 ReceiverSocket::ReceiverSocket(std::string ip, int port, std::string group, BlockingQueue<std::string>* q) {
 	// TODO Auto-generated constructor stub
