@@ -45,7 +45,6 @@ int main(void){
 
 	while (1) {
 		std::string message = q.pop();
-		std::cout << "Message: " << message << std::endl;
 
 		std::vector<std::string> vec;
 		split(message,"/",vec);
@@ -59,18 +58,18 @@ int main(void){
 
 		if(destinationIP == IP){
 			// Received a message that is for us.
-
+			std::cout << "Message: " << message << std::endl;
 		} else if(sourceIP == IP){
 			// Received own message
-
+			std::cout << "Received own message" << std::endl;
 		} else {
 			if(timeStamp == timeStampTemp){
-
+				std::cout << "Received a retransmitted message" << std::endl;
 			} else {
 				timeStampTemp = timeStamp;
 				Sender::sendMessage(message);
+				std::cout << "Retransmitted the message" << std::endl;
 			}
-
 		}
 	}
 
