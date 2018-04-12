@@ -11,12 +11,12 @@
 #include "ip_config.h"
 #include "BlockingQueue.h"
 #include "Sender.h"
+#include "ReceiverSocket.h"
 
 #include <thread>
 #include "receiverTest.h"
 
 namespace Receiver{
-
 
 	void split(const std::string& s, const char* delim, std::vector<std::string>& v) {
 		auto i = 0;
@@ -31,11 +31,18 @@ namespace Receiver{
 		}
 	}
 
-	BlockingQueue< std::string > q;
+	void closeSocket(){
+
+	}
 
 	void loop(){
-		std::thread receiver_thread(receivePacket, IP, PORT, MULTIGROUP, &q); //start network receiving thread
+		BlockingQueue< std::string > q;
+		ReceiverSocket receiverSocket(IP, PORT, MULTIGROUP, &q);
+		receiverSocket.receive();
+	}
 
+
+	{
 		while (1) {
 			std::string message = q.pop();
 
@@ -50,7 +57,7 @@ namespace Receiver{
 			std::string timeStampTemp;
 
 			if(destinationIP == IP){
-				// Received a message that is for us.
+				// Received a message that is for us
 				std::cout << "Message: " << message << std::endl;
 			} else if(sourceIP == IP){
 				// Received own message

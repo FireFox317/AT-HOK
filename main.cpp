@@ -24,18 +24,18 @@ int main(void){
 	std::thread send_thread(Sender::loop);
 	std::thread receive_thread(Receiver::loop);
 
-
 	Message mes("192.168.5.2","Hello!");
 
 	bool loop = true;
 	while (loop) {
 		std::string text;
-		std::getline(std::cin, text);
+		std::cin >> text;
 		if(text == "."){
 			Sender::sendMessage(mes.toString());
 		}
 		if(text == "quit"){
 			loop = false;
+			break;
 		}
 	}
 
