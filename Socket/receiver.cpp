@@ -20,6 +20,8 @@
 #include <unistd.h>  // needed to close socket file descriptor
 #endif
 
+int rsock;
+
 /**
  * Opens the socket, attach it to an interface and join the multicast group
  */
@@ -107,8 +109,6 @@ int get_receive_socket(std::string ip, uint16_t port, std::string group ) {
 
 int receivePacket(std::string ip, int port, std::string group, BlockingQueue<std::string>* q) {
 
-	int rsock;
-
 	rsock = get_receive_socket(ip, port, group);
 
 	// prepare a structure to put peer data into
@@ -124,6 +124,9 @@ int receivePacket(std::string ip, int port, std::string group, BlockingQueue<std
 	while (1) {
 		// Receive packet and put its contents in data, recvfrom will block until a packet for this socket has been received
 		len = recvfrom(rsock, data, 1500, 0, (struct sockaddr *) &peer_address, &peer_address_len);
+		if(len == -1){
+			return 0;
+		}
 		if(len > 0){
 			char str[INET_ADDRSTRLEN];
 			inet_ntop(AF_INET, &(peer_address.sin_addr), str, INET_ADDRSTRLEN);
@@ -137,12 +140,18 @@ int receivePacket(std::string ip, int port, std::string group, BlockingQueue<std
 				q->push( std::string(message) );
 				delete message;
 				//printf("Packet of size %d received!\nData: %s\n\n", len, message);
-			} else {
-				std::cout << "Received own message!" << std::endl;
 			}
 
 		}
 	}
 
 	return 0;
+}
+
+void closeReceiver(){
+#ifdef _WIN32
+		WSACleanup();
+#elif __linux__
+		close(rsock);
+#endif
 }
