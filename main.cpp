@@ -10,16 +10,18 @@
 #include <thread>
 #include <map>
 #include <vector>
+#include <mutex>
 
 
 #include "Socket/Sender.h"
 #include "Message.h"
 #include "Socket/Receiver.h"
 
-
+#include "ThreadSafe.h"
 
 
 int main(void){
+
 	std::thread send_thread(Sender::loop);
 	std::thread receive_thread(Receiver::loop);
 
@@ -28,7 +30,8 @@ int main(void){
 	bool loop = true;
 	while (loop) {
 		std::string text;
-		std::cin >> text;
+		std::getline(std::cin,text);
+
 		if(text == "."){
 			Sender::sendMessage(mes.toString());
 		}

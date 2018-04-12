@@ -8,6 +8,7 @@
 #include <iostream>
 #include <cstring>
 #include "SenderSocket.h"
+#include "../ThreadSafe.h"
 
 SenderSocket::SenderSocket(std::string ip, int port, std::string group) {
 	// TODO Auto-generated constructor stub
@@ -20,14 +21,14 @@ SenderSocket::SenderSocket(std::string ip, int port, std::string group) {
 		// make socket
 		sock = socket(AF_INET, SOCK_DGRAM, 0);
 		if (sock == INVALID_SOCKET) {
-			std::cout << "error opening socket!" << std::endl;
+			ThreadSafe(std::cout << "error opening socket!" << std::endl;)
 			WSACleanup();
 			exit(20);
 		}
 		#elif __linux__
 		sock = socket(AF_INET, SOCK_DGRAM, 0);
 		if (sock < 0) {
-			std::cout << "Error opening socket!" << std::endl;
+			ThreadSafe(std::cout << "Error opening socket!" << std::endl;)
 			exit(20);
 		}
 		int reuse = 1;
@@ -90,7 +91,7 @@ bool SenderSocket::sendMessage(std::string data){
 		return false;
 	}
 	free(c_data);
-	std::cout << "Packet send! Size: " << len << " Data: " << data << std::endl;
+	ThreadSafe(std::cout << "Packet send! Size: " << len << " Data: " << data << std::endl;)
 	return true;
 }
 

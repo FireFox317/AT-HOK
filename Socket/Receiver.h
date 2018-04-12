@@ -13,6 +13,8 @@
 #include "Sender.h"
 #include "ReceiverSocket.h"
 
+#include "../ThreadSafe.h"
+
 
 #include <thread>
 
@@ -55,17 +57,17 @@ namespace Receiver{
 
 			if(destinationIP == IP){
 				// Received a message that is for us
-				std::cout << "Message: " << message << std::endl;
+				ThreadSafe(std::cout << "Message: " << message << std::endl;)
 			} else if(sourceIP == IP){
 				// Received own message
-				std::cout << "Received own message" << std::endl;
+				ThreadSafe(std::cout << "Received own message" << std::endl;)
 			} else {
 				if(timeStamp == timeStampTemp){
-					std::cout << "Received a retransmitted message" << std::endl;
+					ThreadSafe(std::cout << "Received a retransmitted message" << std::endl;)
 				} else {
 					timeStampTemp = timeStamp;
 					Sender::sendMessage(message);
-					std::cout << "Retransmitted the message" << std::endl;
+					ThreadSafe(std::cout << "Retransmitted the message" << std::endl;)
 				}
 			}
 		}

@@ -9,6 +9,9 @@
 
 #include "BlockingQueue.h"
 #include "ip_config.h"
+
+#include "../ThreadSafe.h"
+
 #include <cstring>
 
 
@@ -84,7 +87,7 @@ int ReceiverSocket::get_receive_socket(std::string ip, uint16_t port, std::strin
 	// make socket
 	SOCKET retsock = socket(AF_INET, SOCK_DGRAM, 0);
 	if (retsock == INVALID_SOCKET) {
-		std::cout << "error opening socket!" << std::endl;
+		ThreadSafe(std::cout << "error opening socket!" << std::endl;)
 		WSACleanup();
 		exit(19);
 	}
