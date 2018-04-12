@@ -11,12 +11,15 @@
 #include "BlockingQueue.h"
 #include "receiver.h"
 #include "sender.h"
+#include "security.h"
 #include "IP"
  
 int main(void)
 {
-	chat groupChat;
-	std::thread receiverThread (groupChat.receiver, IP, PORT, GROUP);
+	chat chat1;
+	security chat1security;
+	chat1security.setInfo("Niek", IP, PORT, GROUP);
+	std::thread receiverThread (chat1.receiver, IP, PORT, GROUP);
 	bool quit = false;
 	while(!quit)
 	{
@@ -27,8 +30,8 @@ int main(void)
 			quit = true;
 			break;
 		}
-		groupChat.setSentMessage(message);
-		groupChat.sendSentMessage(IP, PORT, GROUP);
+		chat1.setSentMessage(message);
+		chat1.sendSentMessage(IP, PORT, GROUP);
 	}
 	std::cout << "Goodbye! :)" << std::endl;
 	receiverThread.detach();
