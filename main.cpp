@@ -13,10 +13,8 @@
 
 
 #include "Socket/Sender.h"
-#include "Socket/Receiver.h"
-
-
 #include "Message.h"
+#include "Socket/ReceiverThread.h"
 
 
 

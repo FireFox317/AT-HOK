@@ -5,8 +5,8 @@
  *      Author: timon
  */
 
-#ifndef SOCKET_RECEIVER_H_
-#define SOCKET_RECEIVER_H_
+#ifndef SOCKET_RECEIVERTHREAD_H_
+#define SOCKET_RECEIVERTHREAD_H_
 
 #include "ip_config.h"
 #include "BlockingQueue.h"
@@ -74,4 +74,4 @@ namespace Receiver{
 
 
 
-#endif /* SOCKET_RECEIVER_H_ */
+#endif /* SOCKET_RECEIVERTHREAD_H_ */
