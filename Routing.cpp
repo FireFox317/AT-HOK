@@ -12,6 +12,8 @@
 #include "Message.h"
 #include <iostream>
 
+#include "Reliability.h"
+
 Routing::Routing() {
 	// TODO Auto-generated constructor stub
 
@@ -35,10 +37,17 @@ std::string Routing::process(std::string data){
 	if(destinationIP == IP){
 		// Received a message that is for us
 		ThreadSafe(std::cout << "Data: " << data << std::endl;)
-		return message;
+		if(message == "ACK"){
+			rel.checkTimestamp(timeStamp);
 
-//		Message ack(sourceIP, timeStamp, "ACK");
-//		Sender::sendMessage(ack.toString());
+		} else {
+			Message ack(sourceIP, timeStamp, "ACK");
+			Sender::sendMessage(ack);
+			return message;
+		}
+
+
+
 	} else if(sourceIP == IP){
 		// Received own message
 		ThreadSafe(std::cout << "Received own message" << std::endl;)
@@ -47,7 +56,7 @@ std::string Routing::process(std::string data){
 			ThreadSafe(std::cout << "Received a retransmitted message" << std::endl;)
 		} else {
 			timeStampTemp = timeStamp;
-			Sender::sendMessage(data);
+			//Sender::sendMessage(data);
 			ThreadSafe(std::cout << "Retransmitted the message" << std::endl;)
 		}
 	}

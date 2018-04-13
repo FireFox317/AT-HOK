@@ -12,6 +12,7 @@
 #include <mutex>
 
 #include "ip_config.h"
+#include "../Message.h"
 
 #include "SenderSocket.h"
 
@@ -22,7 +23,7 @@ namespace Sender{
 	extern std::mutex message_mutex;
 
 
-	void sendMessage(std::string data);
+	void sendMessage(Message message);
 
 	void closeSocket();
 

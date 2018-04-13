@@ -19,7 +19,6 @@
 
 #include "ThreadSafe.h"
 
-
 int main(void){
 
 	std::thread send_thread(Sender::loop);
@@ -33,7 +32,7 @@ int main(void){
 		std::getline(std::cin,text);
 
 		if(text == "."){
-			Sender::sendMessage(mes.toString());
+			Sender::sendMessage(mes);
 		}
 		if(text == "quit"){
 			loop = false;

@@ -8,15 +8,18 @@
 
 #include "Sender.h"
 
+#include "../Reliability.h"
+
 std::atomic<bool> Sender::wantToSend(false);
 std::atomic<bool> Sender::finished(false);
 std::string Sender::message;
 std::mutex Sender::message_mutex;
 
-void Sender::sendMessage(std::string data){
+void Sender::sendMessage(Message message){
 		std::lock_guard<std::mutex> lk(Sender::message_mutex);
-		Sender::message = data;
+		Sender::message = message.toString();
 		Sender::wantToSend = true;
+		rel.setSendMessage(message);
 	}
 
 void Sender::closeSocket(){

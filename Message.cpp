@@ -40,6 +40,10 @@ std::string Message::toString(){
 	return str;
 }
 
+std::string Message::getTimestamp(){
+	return timeStamp;
+}
+
 Message::~Message() {
 	// TODO Auto-generated destructor stub
 }
