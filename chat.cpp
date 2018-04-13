@@ -34,12 +34,10 @@ void chat::setReceivedMessage(std::string message)
     receivedMessage = message;
 }
 
-void chat::receiver(std::string ip, int port, std::string group)
+void chat::receiver(std::string ip, int port, std::string group, security* security)
 {
 	BlockingQueue< std::string > q;
-
     std::thread receiver(receivePacket, ip, port, group, &q);           //start network receiving thread
-
 	while (1) {
 		std::string message = q.pop();
 		std::cout << std::left << "          ";
