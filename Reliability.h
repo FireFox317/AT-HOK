@@ -9,6 +9,7 @@
 #define RELIABILITY_H_
 
 #include "Message.h"
+#include <chrono>
 
 class Reliability {
 public:
@@ -19,7 +20,6 @@ public:
 private:
 	Message sendMessage;
 	bool acknowledged;
-	int timeout;
 };
 
 extern Reliability rel;

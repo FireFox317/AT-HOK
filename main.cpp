@@ -12,6 +12,7 @@
 #include <vector>
 #include <mutex>
 
+#include <chrono>
 
 #include "Socket/Sender.h"
 #include "Message.h"
@@ -24,20 +25,26 @@ int main(void){
 	std::thread send_thread(Sender::loop);
 	std::thread receive_thread(Receiver::loop);
 
-	Message mes("192.168.5.2","Hello!");
+	std::string number;
+	std::cout << "Computer number: ";
+	std::getline(std::cin, number);
+
+	std::string ip = "192.168.5.";
+	ip.append(number);
 
 	bool loop = true;
 	while (loop) {
+		std::cout << "Message: ";
 		std::string text;
 		std::getline(std::cin,text);
 
-		if(text == "."){
-			Sender::sendMessage(mes);
-		}
 		if(text == "quit"){
 			loop = false;
 			break;
 		}
+		Message mes(ip,text);
+		Sender::sendMessage(mes);
+
 	}
 
 	Sender::closeSocket();

@@ -9,6 +9,8 @@
 
 #include <iostream>
 
+#include <chrono>
+
 Reliability rel;
 
 Reliability::Reliability() {
@@ -24,6 +26,7 @@ Reliability::~Reliability() {
 void Reliability::setSendMessage(Message message){
 	sendMessage = message;
 	acknowledged = false;
+
 }
 
 void Reliability::checkTimestamp(std::string timestamp){
@@ -31,5 +34,5 @@ void Reliability::checkTimestamp(std::string timestamp){
 		acknowledged = true;
 		std::cout << "Correct ack" << std::endl;
 	}
-
 }
+
