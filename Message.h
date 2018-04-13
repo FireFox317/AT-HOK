@@ -13,6 +13,7 @@
 class Message {
 public:
 	Message(std::string _destinationIP, std::string _data);
+	Message(std::string _destinationIP, std::string timestamp, std::string _data);
 	std::string toString();
 	virtual ~Message();
 private:

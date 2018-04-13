@@ -21,6 +21,13 @@ Message::Message(std::string _destinationIP, std::string _data) {
 	timeStamp = timeStampString;
 }
 
+Message::Message(std::string _destinationIP, std::string timestamp, std::string _data){
+	destinationIP = _destinationIP;
+	data = _data;
+	sourceIP = IP;
+	timeStamp = timestamp;
+}
+
 std::string Message::toString(){
 	std::string str;
 	str.append(sourceIP);

@@ -16,31 +16,17 @@
 #include "SenderSocket.h"
 
 namespace Sender{
-	std::atomic<bool> wantToSend(false);
-	std::atomic<bool> finished(false);
-	std::string message;
-	std::mutex message_mutex;
+	extern std::atomic<bool> wantToSend;
+	extern std::atomic<bool> finished;
+	extern std::string message;
+	extern std::mutex message_mutex;
 
-	void sendMessage(std::string data){
-		std::lock_guard<std::mutex> lk(message_mutex);
-		message = data;
-		wantToSend = true;
-	}
 
-	void closeSocket(){
-		finished = true;
-	}
+	void sendMessage(std::string data);
 
-	void loop(){
-		SenderSocket senderSocket(IP, PORT, MULTIGROUP);
-		while(!finished){
-			if(wantToSend){
-				std::lock_guard<std::mutex> lt(message_mutex);
-				senderSocket.sendMessage(message);
-				wantToSend = false;
-			}
-		}
-	}
+	void closeSocket();
+
+	void loop();
 }
 
 

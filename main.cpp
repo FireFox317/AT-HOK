@@ -41,7 +41,6 @@ int main(void){
 		}
 	}
 
-
 	Sender::closeSocket();
 	Receiver::closeSocket();
 
