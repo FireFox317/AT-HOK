@@ -21,6 +21,7 @@
 namespace Receiver{
 
 	ReceiverSocket* receiverSocket;
+	std::thread* receiverThread;
 
 	void split(const std::string& s, const char* delim, std::vector<std::string>& v) {
 		auto i = 0;
@@ -37,6 +38,8 @@ namespace Receiver{
 
 	void closeSocket(){
 		receiverSocket->closeSocket();
+		receiverThread->detach();
+		delete receiverThread;
 		delete receiverSocket;
 	}
 
@@ -75,10 +78,9 @@ namespace Receiver{
 
 	void loop(){
 		BlockingQueue< std::string > q;
-		std::thread receiver_thread(mainReceiveLoop, &q);
+		receiverThread = new std::thread(mainReceiveLoop, &q);
 		receiverSocket = new ReceiverSocket(IP, PORT, MULTIGROUP, &q);
 		receiverSocket->receive();
-		receiver_thread.detach();
 	}
 
 }

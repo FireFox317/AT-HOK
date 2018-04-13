@@ -46,7 +46,7 @@ int main(void){
 	Receiver::closeSocket();
 
 	send_thread.join();
-	receive_thread.join();
+	receive_thread.detach();
 
 	return 0;
 }
