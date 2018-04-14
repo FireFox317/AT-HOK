@@ -14,41 +14,24 @@
 #include <iostream>
 
 #include "ip_config.h"
+#include "../Message.h"
 
 #include "SenderSocket.h"
 
 namespace Sender{
-	std::condition_variable wantToSend;
-	std::atomic<bool> finished(false);
-	std::string message;
-	std::mutex message_mutex;
 
-	void sendMessage(std::string data){
-		{
-			std::lock_guard<std::mutex> lk(message_mutex);
-			message = data;
-		}
-		wantToSend.notify_one();
-	}
+	extern std::atomic<bool> wantToSend;
+	extern std::atomic<bool> finished;
+	extern std::string message;
+	extern std::mutex message_mutex;
 
-	void closeSocket(){
-		finished = true;
-		wantToSend.notify_one();
-	}
 
-	void loop(){
-		SenderSocket senderSocket(IP, PORT, MULTIGROUP);
+	void sendMessage(Message message);
 
-		while(!finished){
-			std::unique_lock<std::mutex> lk(message_mutex);
-			wantToSend.wait(lk);
-			if(finished){
-				break;
-			}
-			senderSocket.sendMessage(message);
-			lk.unlock();
-		}
-	}
+	void closeSocket();
+
+	void loop();
+
 }
 
 

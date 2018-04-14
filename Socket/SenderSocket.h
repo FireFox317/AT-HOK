@@ -32,7 +32,6 @@ public:
 	virtual ~SenderSocket();
 	bool sendMessage(std::string message);
 
-	static void loop();
 private:
 #ifdef _WIN32
 	SOCKET sock;

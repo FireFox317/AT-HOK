@@ -1,24 +1,74 @@
-#include <sys/types.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string>
+/*
+ * ReceiverSocket.cpp
+ *
+ *  Created on: Apr 12, 2018
+ *      Author: timon
+ */
+
+#include "ReceiverSocket.h"
+
+#include "BlockingQueue.h"
+#include "ip_config.h"
+
+#include "../ThreadSafe.h"
+
 #include <cstring>
-#include <iostream>
 
-#include "../Socket/BlockingQueue.h"
 
+ReceiverSocket::ReceiverSocket(std::string ip, int port, std::string group, BlockingQueue<std::string>* q) {
+	// TODO Auto-generated constructor stub
+	blockQ = q;
+	rsock = get_receive_socket(ip, port, group);
+}
+
+ReceiverSocket::~ReceiverSocket() {
+	// TODO Auto-generated destructor stub
+
+}
+
+void ReceiverSocket::receive(){
+// prepare a structure to put peer data into
+	struct sockaddr_in peer_address;
+	socklen_t peer_address_len;
+	peer_address_len = sizeof(struct sockaddr_storage);
+
+	// allocate memory to put the received data into
+	char * data = new char[1500];
+	int len;
+	len = 0;
+
+	while (1) {
+		// Receive packet and put its contents in data, recvfrom will block until a packet for this socket has been received
+		len = recvfrom(rsock, data, 1500, 0, (struct sockaddr *) &peer_address, &peer_address_len);
+		if(len == -1){
+			return;
+		}
+		if(len > 0){
+			char str[INET_ADDRSTRLEN];
+			inet_ntop(AF_INET, &(peer_address.sin_addr), str, INET_ADDRSTRLEN);
+			std::string receive_ip(str);
+			//std::cout << "Received IP: " << receive_ip << std::endl;
+			if(receive_ip != IP){
+				// not received own packet
+				char * message = new char[len+1];
+				message[len] = '\0'; //set string termination char at end
+				memcpy(message, data, len);
+				blockQ->push( std::string(message) );
+				delete message;
+				//printf("Packet of size %d received!\nData: %s\n\n", len, message);
+			}
+
+		}
+	}
+}
+
+void ReceiverSocket::closeSocket(){
 #ifdef _WIN32
-#include <winsock2.h>
-#include <ws2tcpip.h>
-//#define _WINSOCK_DEPRECATED_NO_WARNINGS
-#pragma comment(lib, "Ws2_32.lib")
-#pragma comment (lib, "Mswsock.lib")
-#pragma comment (lib, "AdvApi32.lib")
+		WSACleanup();
 #elif __linux__
-#include <sys/socket.h>    	//socket
-#include <arpa/inet.h> 		//inet_addr
-#include <unistd.h>  // needed to close socket file descriptor
+		close(rsock);
 #endif
+}
 
 int rsock;
 
@@ -26,9 +76,9 @@ int rsock;
  * Opens the socket, attach it to an interface and join the multicast group
  */
 #ifdef _WIN32
-SOCKET get_receive_socket(std::string ip, uint16_t port, std::string group) {
+SOCKET ReceiverSocket::get_receive_socket(std::string ip, uint16_t port, std::string group) {
 #elif __linux__
-int get_receive_socket(std::string ip, uint16_t port, std::string group ) {
+int ReceiverSocket::get_receive_socket(std::string ip, uint16_t port, std::string group ) {
 #endif
 	/**
 	 * Create a new datagram socket
@@ -39,7 +89,7 @@ int get_receive_socket(std::string ip, uint16_t port, std::string group ) {
 	// make socket
 	SOCKET retsock = socket(AF_INET, SOCK_DGRAM, 0);
 	if (retsock == INVALID_SOCKET) {
-		std::cout << "error opening socket!" << std::endl;
+		ThreadSafe(std::cout << "error opening socket!" << std::endl;)
 		WSACleanup();
 		exit(19);
 	}
@@ -107,47 +157,6 @@ int get_receive_socket(std::string ip, uint16_t port, std::string group ) {
 	return retsock;
 }
 
-int receivePacket(std::string ip, int port, std::string group, BlockingQueue<std::string>* q) {
-
-	rsock = get_receive_socket(ip, port, group);
-
-	// prepare a structure to put peer data into
-	struct sockaddr_in peer_address;
-	socklen_t peer_address_len;
-	peer_address_len = sizeof(struct sockaddr_storage);
-	
-	// allocate memory to put the received data into
-	char * data = new char[1500];
-	int len;
-	len = 0;
-
-	while (1) {
-		// Receive packet and put its contents in data, recvfrom will block until a packet for this socket has been received
-		len = recvfrom(rsock, data, 1500, 0, (struct sockaddr *) &peer_address, &peer_address_len);
-		std::cout << "Len: " << len << std::endl;
-		if(len == -1){
-			return 0;
-		}
-		if(len > 0){
-			char str[INET_ADDRSTRLEN];
-			inet_ntop(AF_INET, &(peer_address.sin_addr), str, INET_ADDRSTRLEN);
-			std::string receive_ip(str);
-			std::cout << "Received IP: " << receive_ip << std::endl;
-			if(receive_ip != ip){
-				// not received own packet
-				char * message = new char[len+1];
-				message[len] = '\0'; //set string termination char at end
-				memcpy(message, data, len);
-				q->push( std::string(message) );
-				delete message;
-				//printf("Packet of size %d received!\nData: %s\n\n", len, message);
-			}
-
-		}
-	}
-
-	return 0;
-}
 
 void closeReceiver(){
 #ifdef _WIN32
@@ -156,3 +165,4 @@ void closeReceiver(){
 		close(rsock);
 #endif
 }
+
