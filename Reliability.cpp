@@ -26,7 +26,6 @@ Reliability::~Reliability() {
 void Reliability::setSendMessage(Message message){
 	sendMessage = message;
 	acknowledged = false;
-
 }
 
 void Reliability::checkTimestamp(std::string timestamp){
