@@ -11,13 +11,16 @@
 #include <string>
 #include <vector>
 
+#include "Message.h"
+
 class Routing {
 public:
 	Routing();
 	virtual ~Routing();
-	std::string process(std::string data);
+	Message process(std::string data);
 private:
 	void split(const std::string& s, const char* delim, std::vector<std::string>& v);
+	std::string timeStampTemp;
 };
 
 #endif /* ROUTING_H_ */

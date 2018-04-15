@@ -38,9 +38,10 @@ namespace Receiver{
 		while (1) {
 			std::string data = q->pop();
 
-			routing.process(data);
-
-
+			Message receivedMessage = routing.process(data);
+			if(receivedMessage.valid()){
+				std::cout << receivedMessage.getComputerNumber() << ">" << receivedMessage.getData() << std::endl;
+			}
 		}
 	}
 

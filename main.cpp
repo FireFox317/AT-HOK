@@ -26,12 +26,18 @@ int main(void){
 	std::thread receive_thread(Receiver::loop);
 
 	std::string number;
-	std::cout << "Computer number: ";
+	std::cout << "Destination (255 is groupchat): ";
 	std::getline(std::cin, number);
 
-	std::string ip = "192.168.5.";
-	ip.append(number);
+	std::string ip;
+	if(number == "255"){
+		ip = MULTIGROUP;
+	} else {
+		ip = "192.168.5.";
+		ip.append(number);
+	}
 
+	std::cout << "Type 'quit' to close the application." << std::endl;
 	bool loop = true;
 	while (loop) {
 		std::cout << "Message: ";
@@ -44,7 +50,6 @@ int main(void){
 		}
 		Message mes(ip,text);
 		Sender::sendMessage(mes);
-
 	}
 
 	Sender::closeSocket();

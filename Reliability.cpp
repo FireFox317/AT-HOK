@@ -31,7 +31,7 @@ void Reliability::setSendMessage(Message message){
 void Reliability::checkTimestamp(std::string timestamp){
 	if(sendMessage.getTimestamp() == timestamp){
 		acknowledged = true;
-		std::cout << "Correct ack" << std::endl;
+		//std::cout << "Correct ack" << std::endl;
 	}
 }
 
