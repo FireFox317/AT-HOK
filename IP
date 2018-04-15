@@ -1,0 +1,3 @@
+#define IP "192.168.5.1"
+#define PORT 12345
+#define GROUP "228.1.2.3"
