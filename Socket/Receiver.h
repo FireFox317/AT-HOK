@@ -17,19 +17,23 @@
 #include "../Message.h"
 #include "../Routing.h"
 
-
 #include <thread>
 
 namespace Receiver{
 
 	ReceiverSocket* receiverSocket;
 	std::thread* receiverThread;
+	wxListBox* box;
 
 	void closeSocket(){
 		receiverSocket->closeSocket();
 		receiverThread->detach();
 		delete receiverThread;
 		delete receiverSocket;
+	}
+
+	void setBox(wxListBox* _box){
+		box = _box;
 	}
 
 	void mainReceiveLoop(BlockingQueue< std::string > *q)
@@ -40,7 +44,10 @@ namespace Receiver{
 
 			Message receivedMessage = routing.process(data);
 			if(receivedMessage.valid()){
-				std::cout << receivedMessage.getComputerNumber() << ">" << receivedMessage.getData() << std::endl;
+				wxString item[1] = {receivedMessage.getComputerNumber() + " > " + receivedMessage.getData()};
+				box->InsertItems(1, item,0);
+				box->EnsureVisible(0);
+
 			}
 		}
 	}
