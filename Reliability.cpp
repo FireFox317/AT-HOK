@@ -30,14 +30,22 @@ Reliability::~Reliability() {
 void Reliability::setSendMessage(Message message){
 	sendMessage = message;
 	acknowledged = false;
-	timer.start(std::chrono::milliseconds(1000), [](){
+	timeout = 0;
+	timer.start(std::chrono::milliseconds(100), [](){
 			if(rel.getAck()){
 				rel.timer.stop();
 				rel.retransmission = false;
 			} else {
-				std::cout << "Send message again, because no ACK yet" << std::endl;
-				rel.retransmission = true;
-				Sender::sendMessage(rel.sendMessage);
+				if(rel.timeout == 3){
+					rel.timer.stop();
+					rel.retransmission = false;
+					std::cout << "Client is not responding!" << std::endl;
+				} else {
+					rel.timeout++;
+					std::cout << "Send message again, because no ACK yet" << std::endl;
+					rel.retransmission = true;
+					Sender::sendMessage(rel.sendMessage);
+				}
 			}
 	});
 }

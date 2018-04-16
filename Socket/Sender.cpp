@@ -19,7 +19,7 @@ void Sender::sendMessage(Message message){
 		std::lock_guard<std::mutex> lk(Sender::message_mutex);
 		Sender::message = message.toString();
 		Sender::wantToSend = true;
-		if(!message.checkMultigroup() && !rel.retransmission && !message.getData() == "ACK"){
+		if(!message.checkMultigroup() && !rel.retransmission && !(message.getData() == "ACK")){
 			rel.setSendMessage(message);
 		}
 	}

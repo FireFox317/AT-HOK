@@ -24,6 +24,7 @@ public:
 	bool retransmission;
 	Timer timer;
 	Message sendMessage;
+	int timeout;
 //	bool isRetransmitting();
 private:
 
