@@ -37,6 +37,12 @@ Message Routing::process(std::string data){
 		//ThreadSafe(std::cout << "Data: " << data << std::endl;)
 		if(timeStamp == timeStampTemp){
 			// received the message before
+			if(message == "ACK"){
+				// already received the ack
+			} else {
+				Message ack(sourceIP, timeStamp, "ACK");
+				Sender::sendMessage(ack);
+			}
 		} else {
 			timeStampTemp = timeStamp;
 			if(message == "ACK"){
@@ -64,7 +70,9 @@ Message Routing::process(std::string data){
 			//ThreadSafe(std::cout << "Received a retransmitted message" << std::endl;)
 		} else {
 			timeStampTemp = timeStamp;
+			Sender::isMulticasting = true;
 			Sender::sendMessage(Message(sourceIP, destinationIP, timeStamp, message));
+			Sender::isMulticasting = false;
 			//ThreadSafe(std::cout << "Retransmitted the message" << std::endl;)
 		}
 	}

@@ -23,6 +23,7 @@ public:
 	std::string getData();
 	std::string getTimestamp();
 	std::string getComputerNumber();
+	bool checkMultigroup();
 
 	virtual ~Message();
 private:

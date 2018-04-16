@@ -24,6 +24,7 @@ namespace Sender{
 	extern std::atomic<bool> finished;
 	extern std::string message;
 	extern std::mutex message_mutex;
+	extern bool isMulticasting;
 
 
 	void sendMessage(Message message);

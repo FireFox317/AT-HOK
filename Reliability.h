@@ -11,15 +11,26 @@
 #include "Message.h"
 #include <chrono>
 
+#include "Timer.h"
+
 class Reliability {
 public:
 	Reliability();
 	virtual ~Reliability();
 	void setSendMessage(Message message);
 	void checkTimestamp(std::string timestamp);
-private:
+	bool getAck();
+
+	bool retransmission;
+	Timer timer;
 	Message sendMessage;
+	int timeout;
+//	bool isRetransmitting();
+private:
+
 	bool acknowledged;
+
+
 };
 
 extern Reliability rel;
