@@ -37,6 +37,7 @@ Message Routing::process(std::string data){
 		//ThreadSafe(std::cout << "Data: " << data << std::endl;)
 		if(timeStamp == timeStampTemp){
 			// received the message before
+			ThreadSafe(std::cout << "Received this message before" << std::endl;)
 		} else {
 			timeStampTemp = timeStamp;
 			if(message == "ACK"){
@@ -49,11 +50,11 @@ Message Routing::process(std::string data){
 		}
 	} else if(sourceIP == IP){
 		// Received own message
-		//ThreadSafe(std::cout << "Received own message" << std::endl;)
+		ThreadSafe(std::cout << "Received own message" << std::endl;)
 	} else if (destinationIP == MULTIGROUP){
 		// Group message
 		if(timeStamp == timeStampTemp){
-			//ThreadSafe(std::cout << "Already received the message" << std::endl;)
+			ThreadSafe(std::cout << "Already received the message" << std::endl;)
 		} else {
 			timeStampTemp = timeStamp;
 			Sender::sendMessage(Message(sourceIP, destinationIP, timeStamp, message));
@@ -61,11 +62,11 @@ Message Routing::process(std::string data){
 		}
 	} else {
 		if(timeStamp == timeStampTemp){
-			//ThreadSafe(std::cout << "Received a retransmitted message" << std::endl;)
+			ThreadSafe(std::cout << "Received a retransmitted message" << std::endl;)
 		} else {
 			timeStampTemp = timeStamp;
 			Sender::sendMessage(Message(sourceIP, destinationIP, timeStamp, message));
-			//ThreadSafe(std::cout << "Retransmitted the message" << std::endl;)
+			ThreadSafe(std::cout << "Retransmitted the message" << std::endl;)
 		}
 	}
 	return Message("empty","empty","empty");
