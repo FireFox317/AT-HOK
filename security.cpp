@@ -128,7 +128,21 @@ void security::senderHandshake()
 
 	receiverHandshake();
 
+	message.clear();
+	encriptedMessage.clear();
 
+	BlockingQueue< std::string > q;
+	std::thread receiver(receivePacket, myIP, port, group, &q);
+	while (1)
+	{
+		encriptedMessage = q.pop();
+		if (encriptedMessage.size())
+		{
+			break;
+		}
+	}
+	receiver.join();
+	std::cout << encriptedMessage << std::endl;
 }
 
 void security::decodeMessage()
