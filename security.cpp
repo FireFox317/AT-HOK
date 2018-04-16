@@ -53,7 +53,41 @@ void security::generateKeyPair()
 void security::generateSessionKey()
 {
 	std::cout << "Het lukte :)  -Dora" << std::endl;
+
+	CryptoPP::AutoSeededRandomPool rnd;
+	CryptoPP::SecByteBlock iv(CryptoPP::AES::BLOCKSIZE);
+	CryptoPP::SecByteBlock key (0x00, CryptoPP::AES::DEFAULT_KEYLENGTH);
+	rnd.GenerateBlock(key, key.size());
+	std::string sessionKey = std::string(reinterpret_cast<const char*>(key.data()));
+	std::cout << "session key = " << sessionKey << std::endl;
+
+	//encryption
+	message = "hoiIvoIkHebGeenZinIn Linux.";
+	CryptoPP::byte bytemessage[] = "hoiIvoIkHebGeenZinIn Linux.";
+	CryptoPP::CFB_Mode<CryptoPP::AES>::Encryption cfbEncryption(key, key.size(), iv);
+	cfbEncryption.ProcessData(bytemessage, bytemessage, message.size());
+	std::cout << "bytemessage = " << bytemessage << std::endl;
+
+	//decryption
+	CryptoPP::CFB_Mode<CryptoPP::AES>::Decryption cfbDecryption(key, key.size(), iv);
+	cfbDecryption.ProcessData(bytemessage, bytemessage, message.size());
+	std::cout << "Decrypted = " << bytemessage << std::endl;
 }
+
+//void security::encriptMessage()
+//{
+//	message = "hoiIvoIkHebGeenZinIn Linux.";
+//	CryptoPP::byte bytemessage[] = "hoiIvoIkHebGeenZinIn Linux.";
+//	CryptoPP::CFB_Mode<CryptoPP::AES>::Encryption cfbEncryption(key, key.size(), iv);
+//	cfbEncryption.ProcessData(bytemessage, bytemessage, message.size());
+//	std::cout << bytemessage << std::endl;
+//}
+//
+//void security::encriptMessage()
+//{
+//	CryptoPP::CFB_Mode<CryptoPP::AES>::Decryption cfbDecryption(key, key.size(), iv);
+//	cfbDecryption(bytemessage, bytemessage, message.size());
+//}
 
 void security::receiverHandshake()
 {
@@ -113,9 +147,10 @@ void security::receiverHandshake()
 
 void security::senderHandshake()
 {
+	generateSessionKey();
+	return;
 	int64_t timestamp = std::chrono::system_clock::now().time_since_epoch().count();
 	message = std::to_string(timestamp);
-	std::cout << message << std::endl;
 
 	encodeMessage();
 
@@ -124,18 +159,18 @@ void security::senderHandshake()
 
 	encriptedMessage.insert(0, "Hand/" + publicKey + "/endofkey/");
 
+	std::cout << encriptedMessage << std::endl;
+
 	sendPacket(myIP, port, group, encriptedMessage);
 
-	receiverHandshake();
-
 	message.clear();
-	//encriptedMessage.clear();
+	encriptedMessage.clear();
 
 	BlockingQueue< std::string > q;
 	std::thread receiver(receivePacket, myIP, port, group, &q);
 	while (1)
 	{
-		//encriptedMessage = q.pop();
+		encriptedMessage = q.pop();
 		if (encriptedMessage.substr(0, 9) == "HandResp/")
 		{
 			break;

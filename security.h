@@ -13,6 +13,8 @@
 #include <cryptopp/base64.h>
 #include <cryptopp/files.h>
 #include <cryptopp/pssr.h>
+#include <cryptopp/modes.h>
+#include <cryptopp/aes.h>
 #include <vector>
 #include <string>
 #include <array>
@@ -45,6 +47,8 @@ public:
 	void generateKeyPair();
 	void senderHandshake();
 	void receiverHandshake();
+	void encriptMessage();
+	void decriptMessage();
 };
 
 #endif /* SECURITY_H_ */
