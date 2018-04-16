@@ -21,8 +21,7 @@
 class chat
 {
 protected:
-    	std::string sentMessage;
-    	std::string receivedMessage;
+	std::string receivedMessage, sentMessage;
 
 public:
     chat();

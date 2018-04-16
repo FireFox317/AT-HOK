@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <chrono>
+#include <fstream>
 #include <cryptopp/rsa.h>
 #include <cryptopp/osrng.h>
 #include <cryptopp/base64.h>
@@ -28,10 +29,7 @@ private:
 	std::string myIP;
 	std::string group;
 	int port;
-	std::string myPublicKey;
-	std::string myPrivateKey;
-	std::vector<std::vector<std::string>> publicKeyTable;
-	std::vector<std::vector<std::string>> sessionKeyTable;
+	std::vector<std::vector<std::string>> keyTable;
 	std::string message, encriptedMessage;
 
 	void generateSessionKey();
@@ -42,8 +40,11 @@ public:
 	security();
 	~security();
 	void setInfo(std::string NAME, std::string IP, int PORT, std::string GROUP);
+	void setEncriptedMessage(std::string message);
+	std::string getEncriptedMessage();
 	void generateKeyPair();
-	void handshake();
+	void senderHandshake();
+	void receiverHandshake();
 };
 
 #endif /* SECURITY_H_ */

@@ -17,10 +17,10 @@
 int main(void)
 {
 	chat chat1;
-	security chat1security;
+	security chat1security();
 	chat1security.setInfo("Niek", IP, PORT, GROUP);
 	chat1security.generateKeyPair();
-	chat1security.handshake();
+	chat1security.senderHandshake();
 	std::cout << "System: Welcome to chatroom" << std::endl;
 	std::thread receiverThread (chat1.receiver, IP, PORT, GROUP, &chat1security);
 	bool quit = false;

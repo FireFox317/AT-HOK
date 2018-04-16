@@ -40,8 +40,16 @@ void chat::receiver(std::string ip, int port, std::string group, security* secur
     std::thread receiver(receivePacket, ip, port, group, &q);           //start network receiving thread
 	while (1) {
 		std::string message = q.pop();
-		std::cout << std::left << "          ";
-		std::cout.width(40); std::cout << std::right << message << std::endl;
+		if (message.substr(0,4) == "Hand")
+		{
+			security->receiverHandshake();
+			security->setEncriptedMessage(message);
+		}
+		else
+		{
+			std::cout << std::left << "          ";
+			std::cout.width(40); std::cout << std::right << message << std::endl;
+		}
 	}
 }
 
