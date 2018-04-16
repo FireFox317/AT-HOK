@@ -37,6 +37,8 @@ Message Routing::process(std::string data){
 		//ThreadSafe(std::cout << "Data: " << data << std::endl;)
 		if(timeStamp == timeStampTemp){
 			// received the message before
+			Message ack(sourceIP, timeStamp, "ACK");
+			Sender::sendMessage(ack);
 		} else {
 			timeStampTemp = timeStamp;
 			if(message == "ACK"){

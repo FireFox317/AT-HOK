@@ -19,7 +19,9 @@ void Sender::sendMessage(Message message){
 		std::lock_guard<std::mutex> lk(Sender::message_mutex);
 		Sender::message = message.toString();
 		Sender::wantToSend = true;
-		rel.setSendMessage(message);
+		if(!message.checkMultigroup() && !rel.retransmission){
+			rel.setSendMessage(message);
+		}
 	}
 
 void Sender::closeSocket(){

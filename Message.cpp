@@ -53,6 +53,10 @@ std::string Message::getTimestamp(){
 	return timeStamp;
 }
 
+bool Message::checkMultigroup(){
+	return destinationIP == MULTIGROUP;
+}
+
 std::string Message::getComputerNumber(){
 	std::vector<std::string> ip;
 	split(sourceIP,".",ip);

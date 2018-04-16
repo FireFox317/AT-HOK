@@ -18,6 +18,8 @@
 #include "Message.h"
 #include "Socket/Receiver.h"
 
+#include "Timer.h"
+
 #include "ThreadSafe.h"
 
 int main(void){
