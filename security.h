@@ -32,8 +32,7 @@ private:
 	std::string myPrivateKey;
 	std::vector<std::vector<std::string>> publicKeyTable;
 	std::vector<std::vector<std::string>> sessionKeyTable;
-	std::string message;
-	std::string signature, recovered;
+	std::string message, encriptedMessage;
 
 	void generateSessionKey();
 	void encodeMessage();

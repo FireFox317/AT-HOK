@@ -59,17 +59,6 @@ void security::handshake()
 	decodeMessage();
 
 	//sendPacket(myIP, port, group, message);
-
-
-//	std::string finalMessage;
-//	CryptoPP::StringStore SSM(finalMessage);
-//	SSM.Put ((CryptoPP::byte const*) message.data(), message.size());
-//	std::string finalSig;
-//	CryptoPP::StringStore SSS(finalSig);
-//	SSS.Put (sbbSignature, sbbSignature.size());
-//
-//	std::cout << "finalMessage = " << finalMessage << std::endl << "finalSig = " << finalSig << std::endl;
-
 }
 
 void security::decodeMessage()
@@ -83,14 +72,14 @@ void security::decodeMessage()
 
 	CryptoPP::RSASS<CryptoPP::PSSR, CryptoPP::SHA1>::Verifier verifier(publicKey);
 
-	CryptoPP::StringSource ss2(signature, true,
+	CryptoPP::StringSource ss2(encriptedMessage, true,
 				new CryptoPP::SignatureVerificationFilter(
 								verifier,
-								new CryptoPP::StringSink(recovered),
+								new CryptoPP::StringSink(message),
 								CryptoPP::SignatureVerificationFilter::THROW_EXCEPTION | CryptoPP::SignatureVerificationFilter::PUT_MESSAGE
 								)
 						);
-	std::cout << recovered << std::endl;
+	std::cout << message << std::endl;
 }
 
 void security::encodeMessage()
@@ -108,9 +97,8 @@ void security::encodeMessage()
 
 	CryptoPP::StringSource ss1(message, true,
 			new CryptoPP::SignerFilter(rng, signer,
-							new CryptoPP::StringSink(signature),
+							new CryptoPP::StringSink(encriptedMessage),
 							true
 							)
 					);
-	std::cout << "signature = " << signature << std::endl;
 }
