@@ -52,7 +52,7 @@ void security::generateKeyPair()
 
 void security::generateSessionKey()
 {
-
+	std::cout << "Het lukte :)  -Dora" << std::endl;
 }
 
 void security::receiverHandshake()
@@ -105,8 +105,8 @@ void security::receiverHandshake()
 	std::string publicKey;
 	CryptoPP::FileSource("/home/niek/Documents/myPublicKey.txt", true, new CryptoPP::StringSink(publicKey));
 
-	encriptedMessage.insert(0, publicKey + "/endofkey/");
-	encriptedMessage.append("/" + receivedTimestamp);
+	encriptedMessage.insert(0, "HandResp/" + publicKey + "/endofkey/");
+	encriptedMessage.append("/data/" + receivedTimestamp);
 
 	sendPacket(myIP, port, group, encriptedMessage);
 }
@@ -129,20 +129,41 @@ void security::senderHandshake()
 	receiverHandshake();
 
 	message.clear();
-	encriptedMessage.clear();
+	//encriptedMessage.clear();
 
 	BlockingQueue< std::string > q;
 	std::thread receiver(receivePacket, myIP, port, group, &q);
 	while (1)
 	{
-		encriptedMessage = q.pop();
-		if (encriptedMessage.size())
+		//encriptedMessage = q.pop();
+		if (encriptedMessage.substr(0, 9) == "HandResp/")
 		{
 			break;
 		}
 	}
-	receiver.join();
-	std::cout << encriptedMessage << std::endl;
+	receiver.detach();
+	encriptedMessage = encriptedMessage.substr(9, encriptedMessage.size());
+
+	std::string receivedPublicKey = encriptedMessage.substr(0, encriptedMessage.find("/endofkey/"));
+	encriptedMessage = encriptedMessage.substr((encriptedMessage.find("/endofkey/") + 10), encriptedMessage.size());
+
+	std::string receivedTimestamp = encriptedMessage.substr(0, 19);
+
+	std::ofstream file("/home/niek/Documents/receivedPublicKey.txt");
+	file << receivedPublicKey;
+	file.close();
+
+	std::string returnedTimestamp = encriptedMessage.substr(encriptedMessage.find("/data/") + 6, encriptedMessage.size());
+	encriptedMessage = encriptedMessage.substr(0, encriptedMessage.find("/data/"));
+
+	message.clear();
+
+	decodeMessage();
+
+	if (message == receivedTimestamp && std::to_string(timestamp) == returnedTimestamp)
+	{
+		generateSessionKey();
+	}
 }
 
 void security::decodeMessage()
