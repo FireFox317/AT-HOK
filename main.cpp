@@ -18,7 +18,7 @@ bool MainApp::OnInit(){
 	send_thread = new std::thread(Sender::loop);
 	receive_thread = new std::thread(Receiver::loop);
 
-	MainFrame* mainFrame = new MainFrame(wxT("AD-HOC Chatting"), wxDefaultPosition, wxSize(300,200));
+	MainFrame* mainFrame = new MainFrame(wxT("AD-HOC Chatting"), wxDefaultPosition, wxSize(500,400));
 	mainFrame->Show(true);
 	SetTopWindow(mainFrame);
 	return true;
@@ -46,10 +46,10 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
 {
 
 	wxMenuBar* menubar = new wxMenuBar();
-	wxMenu* settings = new wxMenu();
-	settings->Append(GROUPCHAT, wxT("&Groupchat"));
-	settings->Append(ONETOONE, wxT("&One-to-One"));
-	menubar->Append(settings, wxT("&Settings"));
+	wxMenu* mode = new wxMenu();
+	mode->Append(GROUPCHAT, wxT("&Groupchat"));
+	mode->Append(ONETOONE, wxT("&One-to-One"));
+	menubar->Append(mode, wxT("&Mode"));
 	SetMenuBar(menubar);
 
 	wxBoxSizer *sizer = new wxBoxSizer(wxHORIZONTAL);
@@ -69,13 +69,7 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
 	SetSizer(verticalBox);
 
     CreateStatusBar();
-    std::string text;
-    if(ip == MULTIGROUP){
-    	text = "Groupchat";
-    } else {
-    	text = "One to one -> Computer number:";
-    }
-    SetStatusText("Mode: " + text);
+    SetStatusText("Mode: Groupchat");
 
 	input->SetFocus();
 }
@@ -96,8 +90,7 @@ void MainFrame::OnClick(wxCommandEvent &event){
 
 void MainFrame::setGroupchat(wxCommandEvent &event){
 	ip = MULTIGROUP;
-	wxMessageBox("Set to groupchatting!",
-	                 "GroupChat", wxICON_NONE);
+	wxMessageBox("Set to groupchatting!", "GroupChat", wxICON_NONE);
 	SetStatusText("Mode: Groupchat");
 }
 
@@ -105,13 +98,6 @@ void MainFrame::setOneToOne(wxCommandEvent &event){
 	wxTextEntryDialog* test = new wxTextEntryDialog(this, "Fill in the Computer number to chat with.", "One-to-One");
 	if(test->ShowModal() == wxID_OK){
 		ip = "192.168.5." + test->GetValue();
+		SetStatusText("Mode: One to one -> Computer number: " + test->GetValue());
 	}
-
-	std::string text;
-    if(ip == MULTIGROUP){
-    	text = "Groupchat";
-    } else {
-    	text = "One to one -> Computer number: " + test->GetValue();
-    }
-    SetStatusText("Mode: " + text);
 }
