@@ -70,7 +70,9 @@ Message Routing::process(std::string data){
 			//ThreadSafe(std::cout << "Received a retransmitted message" << std::endl;)
 		} else {
 			timeStampTemp = timeStamp;
+			Sender::isMulticasting = true;
 			Sender::sendMessage(Message(sourceIP, destinationIP, timeStamp, message));
+			Sender::isMulticasting = false;
 			//ThreadSafe(std::cout << "Retransmitted the message" << std::endl;)
 		}
 	}
