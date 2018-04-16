@@ -35,17 +35,26 @@ int MainApp::OnExit(){
 
 BEGIN_EVENT_TABLE(MainFrame, wxFrame)
 	EVT_BUTTON(BUTTON_send, MainFrame::OnClick)
-	EVT_TEXT_ENTER(INPUT, MainFrame::OnClick)
+	EVT_TEXT_ENTER(INPUT_box, MainFrame::OnClick)
+	EVT_MENU(GROUPCHAT, MainFrame::setGroupchat)
+	EVT_MENU(ONETOONE, MainFrame::setOneToOne)
 END_EVENT_TABLE()
 
 MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
 : wxFrame((wxFrame *) NULL, -1, title, pos, size)
 {
 
+	wxMenuBar* menubar = new wxMenuBar();
+	wxMenu* settings = new wxMenu();
+	settings->Append(GROUPCHAT, wxT("&Groupchat"));
+	settings->Append(ONETOONE, wxT("&One-to-One"));
+	menubar->Append(settings, wxT("&Settings"));
+	SetMenuBar(menubar);
+
 	wxBoxSizer *sizer = new wxBoxSizer(wxHORIZONTAL);
 	wxBoxSizer *verticalBox = new wxBoxSizer(wxVERTICAL);
 
-	input = new wxTextCtrl(this, INPUT, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER);
+	input = new wxTextCtrl(this, INPUT_box, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER);
 	button = new wxButton(this, BUTTON_send, wxT("Send"));
 
 	box = new wxListBox(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
@@ -58,6 +67,15 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
 	verticalBox->Add(box, 1, wxEXPAND);
 	SetSizer(verticalBox);
 
+    CreateStatusBar();
+    std::string text;
+    if(ip == MULTIGROUP){
+    	text = "Groupchat";
+    } else {
+    	text = "One to one -> Computer number:";
+    }
+    SetStatusText("Mode: " + text);
+
 	input->SetFocus();
 }
 
@@ -68,9 +86,31 @@ void MainFrame::OnClick(wxCommandEvent &event){
 		box->InsertItems(1, item,0);
 		box->EnsureVisible(0);
 
-		Message mes("192.168.5.2",input->GetLineText(0).ToStdString());
+		Message mes(ip,input->GetLineText(0).ToStdString());
 		Sender::sendMessage(mes);
 
 		input->Clear();
 	}
+}
+
+void MainFrame::setGroupchat(wxCommandEvent &event){
+	ip = MULTIGROUP;
+	wxMessageBox("Set to groupchatting!",
+	                 "GroupChat", wxICON_NONE);
+	SetStatusText("Mode: Groupchat");
+}
+
+void MainFrame::setOneToOne(wxCommandEvent &event){
+	wxTextEntryDialog* test = new wxTextEntryDialog(this, "Fill in the Computer number to chat with.", "One-to-One");
+	if(test->ShowModal() == wxID_OK){
+		ip = "192.168.5." + test->GetValue();
+	}
+
+	std::string text;
+    if(ip == MULTIGROUP){
+    	text = "Groupchat";
+    } else {
+    	text = "One to one -> Computer number: " + test->GetValue();
+    }
+    SetStatusText("Mode: " + text);
 }

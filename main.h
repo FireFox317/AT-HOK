@@ -9,6 +9,7 @@
 #define MAIN_H_
 
 #include <thread>
+#include "Socket/ip_config.h"
 
 class MainApp: public wxApp {
 public:
@@ -24,10 +25,13 @@ public:
 	MainFrame(const wxString &title, const wxPoint &pos, const wxSize &size);
 
 	void OnClick( wxCommandEvent& event);
+	void setGroupchat( wxCommandEvent& event);
+	void setOneToOne(wxCommandEvent& event);
 	wxTextCtrl* input;
 	wxButton* button;
 	wxListBox* box;
 
+	std::string ip = MULTIGROUP;
 
 
 	DECLARE_EVENT_TABLE()
@@ -35,7 +39,9 @@ public:
 
 enum{
 	BUTTON_send,
-	INPUT
+	INPUT_box,
+	GROUPCHAT,
+	ONETOONE
 };
 
 DECLARE_APP(MainApp);
