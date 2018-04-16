@@ -6,18 +6,18 @@
  */
 
 #include <iostream>
-#include "chat.h"
 #include <thread>
 #include "BlockingQueue.h"
 #include "receiver.h"
 #include "sender.h"
+#include "chat.h"
 #include "security.h"
 #include "IP"
  
 int main(void)
 {
 	chat chat1;
-	security chat1security();
+	security chat1security;
 	chat1security.setInfo("Niek", IP, PORT, GROUP);
 	chat1security.generateKeyPair();
 	chat1security.senderHandshake();
