@@ -15,6 +15,7 @@
 #include <cryptopp/pssr.h>
 #include <cryptopp/modes.h>
 #include <cryptopp/aes.h>
+#include <cryptopp/hex.h>
 #include <vector>
 #include <string>
 #include <array>

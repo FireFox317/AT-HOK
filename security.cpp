@@ -60,30 +60,60 @@ void security::generateSessionKey()
 	rnd.GenerateBlock(key, key.size());
 	std::string sessionKey = std::string(reinterpret_cast<const char*>(key.data()));
 	std::cout << "session key = " << sessionKey << std::endl;
+	std::vector<std::string> destination = {"user", sessionKey};
+	keyTable.push_back(destination);
 
-	//encryption
-	message = "hoiIvoIkHebGeenZinIn Linux.";
-	CryptoPP::byte bytemessage[] = "hoiIvoIkHebGeenZinIn Linux.";
-	CryptoPP::CFB_Mode<CryptoPP::AES>::Encryption cfbEncryption(key, key.size(), iv);
-	cfbEncryption.ProcessData(bytemessage, bytemessage, message.size());
-	std::cout << "bytemessage = " << bytemessage << std::endl;
+	encriptMessage();
 
-	//decryption
-	CryptoPP::CFB_Mode<CryptoPP::AES>::Decryption cfbDecryption(key, key.size(), iv);
-	cfbDecryption.ProcessData(bytemessage, bytemessage, message.size());
-	std::cout << "Decrypted = " << bytemessage << std::endl;
-}
+	//decriptMessage();
 
-//void security::encriptMessage()
-//{
+
+//	//encryption
 //	message = "hoiIvoIkHebGeenZinIn Linux.";
 //	CryptoPP::byte bytemessage[] = "hoiIvoIkHebGeenZinIn Linux.";
 //	CryptoPP::CFB_Mode<CryptoPP::AES>::Encryption cfbEncryption(key, key.size(), iv);
 //	cfbEncryption.ProcessData(bytemessage, bytemessage, message.size());
-//	std::cout << bytemessage << std::endl;
-//}
+//	std::cout << "bytemessage = " << bytemessage << std::endl;
 //
-//void security::encriptMessage()
+//	//decryption
+//	CryptoPP::CFB_Mode<CryptoPP::AES>::Decryption cfbDecryption(key, key.size(), iv);
+//	cfbDecryption.ProcessData(bytemessage, bytemessage, message.size());
+//	std::cout << "Decrypted = " << bytemessage << std::endl;
+}
+
+void security::encriptMessage()
+{
+	message = "hoiIvoIkHebGeenZinIn Linux.";
+	CryptoPP::byte bytemessage[] = {0};
+
+	for (unsigned i = 0; i < message.size(); i++)
+	{
+		bytemessage[i] = message[i];
+	}
+
+	std::string sessionKey = keyTable[0][1];
+	std::cout << sessionKey << std::endl;
+	CryptoPP::SecByteBlock iv(CryptoPP::AES::BLOCKSIZE);
+
+	CryptoPP::StringSource ss(sessionKey, true, new CryptoPP::HexEncoder(new CryptoPP::StringSink(sessionKey)));
+	const CryptoPP::byte* result = (const CryptoPP::byte*) sessionKey.data();
+	CryptoPP::SecByteBlock key(result, CryptoPP::AES::DEFAULT_KEYLENGTH);
+
+	CryptoPP::CFB_Mode<CryptoPP::AES>::Encryption cfbEncryption(key, key.size(), iv);
+	cfbEncryption.ProcessData(bytemessage, bytemessage, message.size());
+
+
+
+
+
+
+	CryptoPP::CFB_Mode<CryptoPP::AES>::Decryption cfbDecryption(key, key.size(), iv);
+	cfbDecryption.ProcessData(bytemessage, bytemessage, message.size());
+
+	std::cout << bytemessage << std::endl;
+}
+
+//void security::decriptMessage()
 //{
 //	CryptoPP::CFB_Mode<CryptoPP::AES>::Decryption cfbDecryption(key, key.size(), iv);
 //	cfbDecryption(bytemessage, bytemessage, message.size());
