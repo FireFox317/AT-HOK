@@ -15,9 +15,10 @@
 #include "Storage.h"
 
 
+
 IMPLEMENT_APP(MainApp);
 
-wxDEFINE_EVENT(MY_EVENT, wxCommandEvent);
+wxDEFINE_EVENT(MY_EVENT, MessageEvent);
 
 bool MainApp::OnInit(){
 	send_thread = new std::thread(Sender::loop);
@@ -46,7 +47,7 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
 	EVT_TEXT_ENTER(INPUT_box, MainFrame::OnClick)
 	EVT_MENU(GROUPCHAT, MainFrame::setGroupchat)
 	EVT_MENU(ONETOONE, MainFrame::setOneToOne)
-	EVT_COMMAND(wxID_ANY, MY_EVENT, MainFrame::showNotification)
+	MY_EVT_MESSAGE(wxID_ANY, MainFrame::showNotification)
 END_EVENT_TABLE()
 
 MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
@@ -120,7 +121,14 @@ void MainFrame::setOneToOne(wxCommandEvent &event){
 	}
 }
 
-void MainFrame::showNotification(wxCommandEvent& event){
-	test->SetMessage(event.GetString());
+void MainFrame::showNotification(MessageEvent& event){
+	Message message = event.GetMessage();
+	if(message.checkMultigroup()){
+		test->SetTitle("Received a Groupchat Message!");
+		test->SetMessage(message.getData());
+	} else {
+		test->SetTitle("Received a message from " + message.getComputerNumber());
+		test->SetMessage(message.getData());
+	}
 	test->Show();
 }

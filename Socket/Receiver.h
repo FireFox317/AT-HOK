@@ -49,13 +49,16 @@ namespace Receiver{
 				if(receivedMessage.checkMultigroup()){
 					storage.addGroupChatMessage(receivedMessage.getComputerNumber() + " > " + receivedMessage.getData());
 					{
-					    wxCommandEvent* event = new wxCommandEvent(MY_EVENT, wxID_ANY);
-					    event->SetString(receivedMessage.getData().c_str());
+						MessageEvent* event = new MessageEvent(MY_EVENT, wxID_ANY, receivedMessage);
 					    wxQueueEvent(wxGetApp().mainFrame->GetEventHandler(),event);
 					}
 
 				} else {
 					storage.addOneToOneMessage(receivedMessage.getSourceIP(), receivedMessage.getComputerNumber() + " > " + receivedMessage.getData());
+					{
+						MessageEvent* event = new MessageEvent(MY_EVENT, wxID_ANY, receivedMessage);
+					    wxQueueEvent(wxGetApp().mainFrame->GetEventHandler(),event);
+					}
 				}
 			}
 		}
