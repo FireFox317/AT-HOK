@@ -3,6 +3,8 @@
 #	include <wx/wx.h>
 #endif
 
+#include <wx/notifmsg.h>
+
 #include "main.h"
 
 #include <thread>
@@ -15,13 +17,15 @@
 
 IMPLEMENT_APP(MainApp);
 
+wxDEFINE_EVENT(MY_EVENT, wxCommandEvent);
+
 bool MainApp::OnInit(){
 	send_thread = new std::thread(Sender::loop);
 	receive_thread = new std::thread(Receiver::loop);
 
 	Sender::sendMessage(Message(MULTIGROUP,"Joined the groupchat."));
 
-	MainFrame* mainFrame = new MainFrame(wxT("AD-HOC Chatting"), wxDefaultPosition, wxSize(500,400));
+	mainFrame = new MainFrame(wxT("AD-HOC Chatting"), wxDefaultPosition, wxSize(500,400));
 	mainFrame->Show(true);
 	SetTopWindow(mainFrame);
 	return true;
@@ -42,6 +46,7 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
 	EVT_TEXT_ENTER(INPUT_box, MainFrame::OnClick)
 	EVT_MENU(GROUPCHAT, MainFrame::setGroupchat)
 	EVT_MENU(ONETOONE, MainFrame::setOneToOne)
+	EVT_COMMAND(wxID_ANY, MY_EVENT, MainFrame::showNotification)
 END_EVENT_TABLE()
 
 MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
@@ -63,8 +68,11 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
 
 	box = new wxListBox(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
 
+	test = new wxNotificationMessage("AD-HOC Message");
+
 	storage.setBox(box);
 	storage.setMode("GroupChat");
+
 
 	sizer->Add(input, 1);
 	sizer->Add(button, 0);
@@ -99,6 +107,7 @@ void MainFrame::setGroupchat(wxCommandEvent &event){
 	SetStatusText("Mode: Groupchat");
 	Sender::sendMessage(Message(MULTIGROUP,"Joined the groupchat."));
 	storage.setMode("GroupChat");
+
 }
 
 void MainFrame::setOneToOne(wxCommandEvent &event){
@@ -109,4 +118,9 @@ void MainFrame::setOneToOne(wxCommandEvent &event){
 		Sender::sendMessage(Message(MULTIGROUP,"Left the groupchat."));
 		storage.setMode("1To1: " + ip);
 	}
+}
+
+void MainFrame::showNotification(wxCommandEvent& event){
+	test->SetMessage(event.GetString());
+	test->Show();
 }

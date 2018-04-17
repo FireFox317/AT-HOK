@@ -11,10 +11,14 @@
 #include <thread>
 #include "Socket/ip_config.h"
 
+class MainFrame;
+
 class MainApp: public wxApp {
 public:
 	virtual bool OnInit();
 	virtual int OnExit();
+
+	MainFrame* mainFrame;
 
 	std::thread* send_thread;
 	std::thread* receive_thread;
@@ -27,9 +31,11 @@ public:
 	void OnClick( wxCommandEvent& event);
 	void setGroupchat( wxCommandEvent& event);
 	void setOneToOne(wxCommandEvent& event);
+	void showNotification(wxCommandEvent& event);
 	wxTextCtrl* input;
 	wxButton* button;
 	wxListBox* box;
+	wxNotificationMessage* test;
 
 	std::string ip = MULTIGROUP;
 
@@ -45,6 +51,9 @@ enum{
 };
 
 DECLARE_APP(MainApp);
+
+wxDECLARE_EVENT(MY_EVENT, wxCommandEvent);
+
 
 
 #endif /* MAIN_H_ */

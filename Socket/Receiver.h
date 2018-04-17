@@ -18,13 +18,15 @@
 #include "../Routing.h"
 #include "../Storage.h"
 
+#include "../main.h"
+
 #include <thread>
 
 namespace Receiver{
 
 	ReceiverSocket* receiverSocket;
 	std::thread* receiverThread;
-	wxListBox* box;
+
 
 	void closeSocket(){
 		receiverSocket->closeSocket();
@@ -33,9 +35,8 @@ namespace Receiver{
 		delete receiverSocket;
 	}
 
-	void setBox(wxListBox* _box){
-		box = _box;
-	}
+
+
 
 	void mainReceiveLoop(BlockingQueue< std::string > *q)
 	{
@@ -47,6 +48,12 @@ namespace Receiver{
 			if(receivedMessage.valid()){
 				if(receivedMessage.checkMultigroup()){
 					storage.addGroupChatMessage(receivedMessage.getComputerNumber() + " > " + receivedMessage.getData());
+					{
+					    wxCommandEvent* event = new wxCommandEvent(MY_EVENT, wxID_ANY);
+					    event->SetString(receivedMessage.getData().c_str());
+					    wxQueueEvent(wxGetApp().mainFrame->GetEventHandler(),event);
+					}
+
 				} else {
 					storage.addOneToOneMessage(receivedMessage.getSourceIP(), receivedMessage.getComputerNumber() + " > " + receivedMessage.getData());
 				}
