@@ -63,6 +63,10 @@ std::string Message::getComputerNumber(){
 	return ip[3];
 }
 
+std::string Message::getSourceIP(){
+	return sourceIP;
+}
+
 std::string Message::getData(){
 	return data;
 }

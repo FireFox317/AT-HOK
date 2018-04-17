@@ -10,6 +10,7 @@
 #include "Socket/Sender.h"
 #include "Socket/Receiver.h"
 #include "Message.h"
+#include "Storage.h"
 
 
 IMPLEMENT_APP(MainApp);
@@ -62,7 +63,8 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
 
 	box = new wxListBox(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
 
-	Receiver::setBox(box);
+	storage.setBox(box);
+	storage.setMode("GroupChat");
 
 	sizer->Add(input, 1);
 	sizer->Add(button, 0);
@@ -78,10 +80,11 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
 
 void MainFrame::OnClick(wxCommandEvent &event){
 	if(!input->GetLineText(0).IsEmpty()){
-
-		wxString item[1] = {"You > " + input->GetLineText(0)};
-		box->InsertItems(1, item,0);
-		box->EnsureVisible(0);
+		if(ip == MULTIGROUP){
+			storage.addGroupChatMessage("You > " + input->GetLineText(0).ToStdString());
+		} else {
+			storage.addOneToOneMessage(ip,"You > " + input->GetLineText(0).ToStdString());
+		}
 
 		Message mes(ip,input->GetLineText(0).ToStdString());
 		Sender::sendMessage(mes);
@@ -95,6 +98,7 @@ void MainFrame::setGroupchat(wxCommandEvent &event){
 	wxMessageBox("Set to groupchatting!", "GroupChat", wxICON_NONE);
 	SetStatusText("Mode: Groupchat");
 	Sender::sendMessage(Message(MULTIGROUP,"Joined the groupchat."));
+	storage.setMode("GroupChat");
 }
 
 void MainFrame::setOneToOne(wxCommandEvent &event){
@@ -103,5 +107,6 @@ void MainFrame::setOneToOne(wxCommandEvent &event){
 		ip = "192.168.5." + test->GetValue();
 		SetStatusText("Mode: One to one -> Computer number: " + test->GetValue());
 		Sender::sendMessage(Message(MULTIGROUP,"Left the groupchat."));
+		storage.setMode("1To1: " + ip);
 	}
 }

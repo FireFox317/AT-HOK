@@ -16,6 +16,7 @@
 
 #include "../Message.h"
 #include "../Routing.h"
+#include "../Storage.h"
 
 #include <thread>
 
@@ -44,10 +45,11 @@ namespace Receiver{
 
 			Message receivedMessage = routing.process(data);
 			if(receivedMessage.valid()){
-				wxString item[1] = {receivedMessage.getComputerNumber() + " > " + receivedMessage.getData()};
-				box->InsertItems(1, item,0);
-				box->EnsureVisible(0);
-
+				if(receivedMessage.checkMultigroup()){
+					storage.addGroupChatMessage(receivedMessage.getComputerNumber() + " > " + receivedMessage.getData());
+				} else {
+					storage.addOneToOneMessage(receivedMessage.getSourceIP(), receivedMessage.getComputerNumber() + " > " + receivedMessage.getData());
+				}
 			}
 		}
 	}
