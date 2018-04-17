@@ -52,48 +52,32 @@ void security::generateKeyPair()
 
 void security::generateSessionKey()
 {
-	std::cout << "Het lukte :)  -Dora" << std::endl;
-
 	CryptoPP::AutoSeededRandomPool rnd;
-	CryptoPP::SecByteBlock iv(CryptoPP::AES::BLOCKSIZE);
 	CryptoPP::SecByteBlock key (0x00, CryptoPP::AES::DEFAULT_KEYLENGTH);
 	rnd.GenerateBlock(key, key.size());
 	std::string sessionKey = std::string(reinterpret_cast<const char*>(key.data()));
-	std::cout << "session key = " << sessionKey << std::endl;
 	std::vector<std::string> destination = {"user", sessionKey};
 	keyTable.push_back(destination);
 
+	std::cout << sessionKey << std::endl << std::endl;
+
 	encriptMessage();
-
-	//decriptMessage();
-
-
-//	//encryption
-//	message = "hoiIvoIkHebGeenZinIn Linux.";
-//	CryptoPP::byte bytemessage[] = "hoiIvoIkHebGeenZinIn Linux.";
-//	CryptoPP::CFB_Mode<CryptoPP::AES>::Encryption cfbEncryption(key, key.size(), iv);
-//	cfbEncryption.ProcessData(bytemessage, bytemessage, message.size());
-//	std::cout << "bytemessage = " << bytemessage << std::endl;
-//
-//	//decryption
-//	CryptoPP::CFB_Mode<CryptoPP::AES>::Decryption cfbDecryption(key, key.size(), iv);
-//	cfbDecryption.ProcessData(bytemessage, bytemessage, message.size());
-//	std::cout << "Decrypted = " << bytemessage << std::endl;
+	decriptMessage();
 }
 
 void security::encriptMessage()
 {
-	message = "hoiIvoIkHebGeenZinIn Linux.";
-	CryptoPP::byte bytemessage[] = {0};
-
+	message = "Hallo allemaal, wat fijn dat je er bent... :)D)D))Dkjkfda hoi hoi ho ih oinklfd;ak;lfdsan k;dsaj kfjdsakjk djkf jsak djfkla ;jk;lfdsa jkflds want een onzin";
+	CryptoPP::byte bytemessage[message.size()];
+	std::cout << "message = " << message << std::endl << std::endl;
 	for (unsigned i = 0; i < message.size(); i++)
 	{
 		bytemessage[i] = message[i];
 	}
 
-	std::string sessionKey = keyTable[0][1];
-	std::cout << sessionKey << std::endl;
 	CryptoPP::SecByteBlock iv(CryptoPP::AES::BLOCKSIZE);
+	ivtemp = std::string(reinterpret_cast<const char*>(iv.data()));
+	std::string sessionKey = keyTable[0][1];
 
 	CryptoPP::StringSource ss(sessionKey, true, new CryptoPP::HexEncoder(new CryptoPP::StringSink(sessionKey)));
 	const CryptoPP::byte* result = (const CryptoPP::byte*) sessionKey.data();
@@ -102,22 +86,34 @@ void security::encriptMessage()
 	CryptoPP::CFB_Mode<CryptoPP::AES>::Encryption cfbEncryption(key, key.size(), iv);
 	cfbEncryption.ProcessData(bytemessage, bytemessage, message.size());
 
-
-
-
-
-
-	CryptoPP::CFB_Mode<CryptoPP::AES>::Decryption cfbDecryption(key, key.size(), iv);
-	cfbDecryption.ProcessData(bytemessage, bytemessage, message.size());
-
-	std::cout << bytemessage << std::endl;
+	encriptedMessage = std::string(reinterpret_cast<const char*>(bytemessage));
+	std::cout << "encriptedMessage = " << encriptedMessage << std::endl << std::endl;
 }
 
-//void security::decriptMessage()
-//{
-//	CryptoPP::CFB_Mode<CryptoPP::AES>::Decryption cfbDecryption(key, key.size(), iv);
-//	cfbDecryption(bytemessage, bytemessage, message.size());
-//}
+void security::decriptMessage()
+{
+	CryptoPP::byte bytemessage[encriptedMessage.size()];
+	for (unsigned i = 0; i < encriptedMessage.size(); i++)
+	{
+		bytemessage[i] = encriptedMessage[i];
+	}
+
+	std::string sessionKey = keyTable[0][1];
+	CryptoPP::StringSource ss(sessionKey, true, new CryptoPP::HexEncoder(new CryptoPP::StringSink(sessionKey)));
+	const CryptoPP::byte* result = (const CryptoPP::byte*) sessionKey.data();
+	CryptoPP::SecByteBlock key(result, CryptoPP::AES::DEFAULT_KEYLENGTH);
+
+	CryptoPP::StringSource ss2(ivtemp, true, new CryptoPP::HexEncoder(new CryptoPP::StringSink(ivtemp)));
+	const CryptoPP::byte* result2 = (const CryptoPP::byte*) (ivtemp.substr(0, 6)).data();
+	CryptoPP::SecByteBlock iv(result2, ivtemp.size());
+
+	std::string divtemp = std::string(reinterpret_cast<const char*>(iv.data()));
+
+	CryptoPP::CFB_Mode<CryptoPP::AES>::Decryption cfbDecryption(key, key.size(), iv);
+	cfbDecryption.ProcessData(bytemessage, bytemessage, encriptedMessage.size());
+	message = std::string(reinterpret_cast<const char*>(bytemessage));
+	std::cout << "decriptedMessage = " << message << std::endl << std::endl;
+}
 
 void security::receiverHandshake()
 {

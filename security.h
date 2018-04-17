@@ -33,7 +33,7 @@ private:
 	std::string group;
 	int port;
 	std::vector<std::vector<std::string>> keyTable;
-	std::string message, encriptedMessage;
+	std::string message, encriptedMessage, ivtemp;
 
 	void generateSessionKey();
 	void encodeMessage();
