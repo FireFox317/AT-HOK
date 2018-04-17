@@ -53,7 +53,7 @@ public:
 	wxTextCtrl* input;
 	wxButton* button;
 	wxListBox* box;
-	wxNotificationMessage* test;
+	wxNotificationMessage* notification;
 
 	std::string ip = MULTIGROUP;
 

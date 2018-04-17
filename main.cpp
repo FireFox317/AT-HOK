@@ -15,7 +15,6 @@
 #include "Storage.h"
 
 
-
 IMPLEMENT_APP(MainApp);
 
 wxDEFINE_EVENT(MY_EVENT, MessageEvent);
@@ -69,7 +68,7 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
 
 	box = new wxListBox(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
 
-	test = new wxNotificationMessage("AD-HOC Message");
+	notification = new wxNotificationMessage("AD-HOC Message");
 
 	storage.setBox(box);
 	storage.setMode("GroupChat");
@@ -124,16 +123,20 @@ void MainFrame::setOneToOne(wxCommandEvent &event){
 void MainFrame::showNotification(MessageEvent& event){
 	Message message = event.GetMessage();
 	if(message.checkMultigroup()){
-		test->SetTitle("Received a Groupchat Message!");
-		test->SetMessage(message.getData());
+		notification->SetTitle("Received a Groupchat Message!");
+		notification->SetMessage(message.getData());
 		if(storage.getMode() != "GroupChat"){
-			test->Show();
+			notification->Show();
 		}
 	} else {
-		test->SetTitle("Received a message from " + message.getComputerNumber());
-		test->SetMessage(message.getData());
-		if(message.getComputerNumber() != storage.getMode().substr(16,storage.getMode().size()-16)){
-			test->Show();
+		notification->SetTitle("Received a message from " + message.getComputerNumber());
+		notification->SetMessage(message.getData());
+		if(storage.getMode() == "GroupChat"){
+			notification->Show();
+		} else {
+			if(message.getComputerNumber() != storage.getMode().substr(16,storage.getMode().size()-16)){
+				notification->Show();
+			}
 		}
 	}
 }
