@@ -18,6 +18,8 @@ bool MainApp::OnInit(){
 	send_thread = new std::thread(Sender::loop);
 	receive_thread = new std::thread(Receiver::loop);
 
+	Sender::sendMessage(Message(MULTIGROUP,"Joined the groupchat."));
+
 	MainFrame* mainFrame = new MainFrame(wxT("AD-HOC Chatting"), wxDefaultPosition, wxSize(500,400));
 	mainFrame->Show(true);
 	SetTopWindow(mainFrame);
@@ -92,6 +94,7 @@ void MainFrame::setGroupchat(wxCommandEvent &event){
 	ip = MULTIGROUP;
 	wxMessageBox("Set to groupchatting!", "GroupChat", wxICON_NONE);
 	SetStatusText("Mode: Groupchat");
+	Sender::sendMessage(Message(MULTIGROUP,"Joined the groupchat."));
 }
 
 void MainFrame::setOneToOne(wxCommandEvent &event){
@@ -99,5 +102,6 @@ void MainFrame::setOneToOne(wxCommandEvent &event){
 	if(test->ShowModal() == wxID_OK){
 		ip = "192.168.5." + test->GetValue();
 		SetStatusText("Mode: One to one -> Computer number: " + test->GetValue());
+		Sender::sendMessage(Message(MULTIGROUP,"Left the groupchat."));
 	}
 }
