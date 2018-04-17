@@ -23,6 +23,7 @@ public:
 	void addOneToOneMessage(std::string ip,std::string message);
 	void setBox(wxListBox* _box);
 	void setMode(std::string _mode);
+	std::string getMode();
 private:
 	wxArrayString groupChatStorage;
 	std::map<std::string,wxArrayString> OneToOneStorage;

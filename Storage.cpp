@@ -19,12 +19,12 @@ Storage::~Storage() {
 }
 
 void Storage::addGroupChatMessage(std::string message){
-	groupChatStorage.Add(message);
+	groupChatStorage.Insert(message,0);
 	updateBox();
 }
 
 void Storage::addOneToOneMessage(std::string ip, std::string message){
-	OneToOneStorage[ip].Add(message);
+	OneToOneStorage[ip].Insert(message,0);
 	updateBox();
 }
 
@@ -57,6 +57,10 @@ void Storage::updateBox(){
 void Storage::setMode(std::string _mode){
 	mode = _mode;
 	updateBox();
+}
+
+std::string Storage::getMode(){
+	return mode;
 }
 
 

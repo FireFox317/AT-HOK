@@ -126,9 +126,14 @@ void MainFrame::showNotification(MessageEvent& event){
 	if(message.checkMultigroup()){
 		test->SetTitle("Received a Groupchat Message!");
 		test->SetMessage(message.getData());
+		if(storage.getMode() != "GroupChat"){
+			test->Show();
+		}
 	} else {
 		test->SetTitle("Received a message from " + message.getComputerNumber());
 		test->SetMessage(message.getData());
+		if(message.getComputerNumber() != storage.getMode().substr(16,storage.getMode().size()-16)){
+			test->Show();
+		}
 	}
-	test->Show();
 }
