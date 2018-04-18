@@ -75,6 +75,14 @@ bool Message::valid(){
 	return !(destinationIP == "empty" && data == "empty" && timeStamp == "empty");
 }
 
+void Message::setData(std::string _data){
+	data = _data;
+}
+
+std::string Message::getDestinationIP(){
+	return destinationIP;
+}
+
 Message::~Message() {
 	// TODO Auto-generated destructor stub
 }

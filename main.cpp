@@ -14,6 +14,8 @@
 #include "Message.h"
 #include "Storage.h"
 
+#include "Security.h"
+
 
 IMPLEMENT_APP(MainApp);
 
@@ -95,6 +97,9 @@ void MainFrame::OnClick(wxCommandEvent &event){
 		}
 
 		Message mes(ip,input->GetLineText(0).ToStdString());
+		if(!mes.checkMultigroup()){
+				chatsecurity.encriptMessage(mes);
+		}
 		Sender::sendMessage(mes);
 
 		input->Clear();

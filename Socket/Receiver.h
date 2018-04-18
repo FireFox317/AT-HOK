@@ -18,6 +18,7 @@
 #include "../Routing.h"
 #include "../Storage.h"
 
+#include "../Security.h"
 #include "../main.h"
 
 #include <thread>
@@ -46,6 +47,7 @@ namespace Receiver{
 
 			Message receivedMessage = routing.process(data);
 			if(receivedMessage.valid()){
+				std::cout << "Test: " << receivedMessage.getData() << std::endl;
 				if(receivedMessage.checkMultigroup()){
 					storage.addGroupChatMessage(receivedMessage.getComputerNumber() + " > " + receivedMessage.getData());
 					{
@@ -54,6 +56,7 @@ namespace Receiver{
 					}
 
 				} else {
+					chatsecurity.decriptMessage(receivedMessage);
 					storage.addOneToOneMessage(receivedMessage.getSourceIP(), receivedMessage.getComputerNumber() + " > " + receivedMessage.getData());
 					{
 						MessageEvent* event = new MessageEvent(MY_EVENT, wxID_ANY, receivedMessage);
