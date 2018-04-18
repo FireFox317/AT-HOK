@@ -61,8 +61,8 @@ void security::generateSessionKey()
 
 	std::cout << sessionKey << std::endl << std::endl;
 
-	encriptMessage();
-	decriptMessage();
+	//encriptMessage();
+	//decriptMessage();
 }
 
 void security::encriptMessage()
@@ -102,7 +102,6 @@ void security::decriptMessage()
 	CryptoPP::StringSource ss(sessionKey, true, new CryptoPP::HexEncoder(new CryptoPP::StringSink(sessionKey)));
 	const CryptoPP::byte* result = (const CryptoPP::byte*) sessionKey.data();
 	CryptoPP::SecByteBlock key(result, CryptoPP::AES::DEFAULT_KEYLENGTH);
-
 	CryptoPP::StringSource ss2(ivtemp, true, new CryptoPP::HexEncoder(new CryptoPP::StringSink(ivtemp)));
 	const CryptoPP::byte* result2 = (const CryptoPP::byte*) (ivtemp.substr(0, 6)).data();
 	CryptoPP::SecByteBlock iv(result2, ivtemp.size());
@@ -169,12 +168,12 @@ void security::receiverHandshake()
 	encriptedMessage.append("/data/" + receivedTimestamp);
 
 	sendPacket(myIP, port, group, encriptedMessage);
+
+	//waiting for sessionkey
 }
 
 void security::senderHandshake()
 {
-	generateSessionKey();
-	return;
 	int64_t timestamp = std::chrono::system_clock::now().time_since_epoch().count();
 	message = std::to_string(timestamp);
 
@@ -192,6 +191,7 @@ void security::senderHandshake()
 	message.clear();
 	encriptedMessage.clear();
 
+	std::cout << "Waiting for response" << std::endl;
 	BlockingQueue< std::string > q;
 	std::thread receiver(receivePacket, myIP, port, group, &q);
 	while (1)
@@ -223,7 +223,33 @@ void security::senderHandshake()
 
 	if (message == receivedTimestamp && std::to_string(timestamp) == returnedTimestamp)
 	{
+		std::cout << "check" << std::endl;
 		generateSessionKey();
+		message.clear();
+		message = keyTable[0][1];
+
+		CryptoPP::ByteQueue bytes;
+		CryptoPP::FileSource file("/home/niek/Documents/receivedPublicKey.txt", true, new CryptoPP::Base64Decoder);
+		file.TransferTo(bytes);
+		bytes.MessageEnd();
+		CryptoPP::RSA::PublicKey publicKey;
+		publicKey.Load(bytes);
+
+		CryptoPP::RSASS<CryptoPP::PSSR, CryptoPP::SHA1>::Verifier verifier(publicKey);
+
+		CryptoPP::StringSource ss2(encriptedMessage, true,
+					new CryptoPP::SignatureVerificationFilter(
+									verifier,
+									new CryptoPP::StringSink(message),
+									CryptoPP::SignatureVerificationFilter::THROW_EXCEPTION | CryptoPP::SignatureVerificationFilter::PUT_MESSAGE
+									)
+							);
+		std::cout << "message = " << message << std::endl;
+		std::cout << "encriptedMessage = " << encriptedMessage << std::endl;
+	}
+	else
+	{
+		std::cout << "Received an unexpected message..." << std::endl;
 	}
 }
 
