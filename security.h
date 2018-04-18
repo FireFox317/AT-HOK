@@ -19,6 +19,7 @@
 #include <vector>
 #include <string>
 #include <array>
+#include <map>
 #include "sender.h"
 #include "receiver.h"
 
@@ -32,7 +33,7 @@ private:
 	std::string myIP;
 	std::string group;
 	int port;
-	std::vector<std::vector<std::string>> keyTable;
+	std::map<std::string, std::string> keyTable;
 	std::string message, encriptedMessage, ivtemp;
 
 	void generateSessionKey();
