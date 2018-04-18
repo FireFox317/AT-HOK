@@ -42,10 +42,9 @@ namespace Receiver{
 
 			Message receivedMessage = routing.process(data);
 			if(receivedMessage.valid()){
-				if(receivedMessage.getData().substr(0,5) == "Hand/"){
-					chatsecurity.receiverHandshake(receivedMessage.getData());
+				if(!receivedMessage.checkMultigroup()){
+					chatsecurity.decriptMessage(receivedMessage);
 				}
-
 				std::cout << receivedMessage.getComputerNumber() << ">" << receivedMessage.getData() << std::endl;
 			}
 		}

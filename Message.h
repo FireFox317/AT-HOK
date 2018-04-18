@@ -23,6 +23,10 @@ public:
 	std::string getData();
 	std::string getTimestamp();
 	std::string getComputerNumber();
+	std::string getDestinationIP();
+	std::string getSourceIP();
+
+	void setData(std::string _data);
 	bool checkMultigroup();
 
 	virtual ~Message();

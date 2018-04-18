@@ -49,6 +49,18 @@ std::string Message::toString(){
 	return str;
 }
 
+std::string Message::getDestinationIP(){
+	return destinationIP;
+}
+
+void Message::setData(std::string _data){
+	data = _data;
+}
+
+std::string Message::getSourceIP(){
+	return sourceIP;
+}
+
 std::string Message::getTimestamp(){
 	return timeStamp;
 }

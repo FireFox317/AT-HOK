@@ -31,7 +31,7 @@ void Reliability::setSendMessage(Message message){
 	sendMessage = message;
 	acknowledged = false;
 	timeout = 0;
-	timer.start(std::chrono::milliseconds(100), [](){
+	timer.start(std::chrono::milliseconds(500), [](){
 			if(rel.getAck()){
 				rel.timer.stop();
 				rel.retransmission = false;

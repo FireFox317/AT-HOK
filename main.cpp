@@ -29,11 +29,15 @@ int main(void){
 	std::thread send_thread(Sender::loop);
 	std::thread receive_thread(Receiver::loop);
 
-
-	chatsecurity.setInfo("hoi",IP,PORT,MULTIGROUP);
-
-	chatsecurity.generateKeyPair();
-	chatsecurity.senderHandshake();
+//	std::cin.get();
+////
+////
+//	chatsecurity.setInfo("hoi",IP,PORT,MULTIGROUP);
+////	chatsecurity.generateSessionKey();
+////
+//	chatsecurity.generateKeyPair();
+//	chatsecurity.senderHandshake();
+	chatsecurity.generateSessionKey();
 
 	std::string number;
 	std::cout << "Destination (255 is groupchat): ";
@@ -59,7 +63,11 @@ int main(void){
 			break;
 		}
 		Message mes(ip,text);
+		if(!mes.checkMultigroup()){
+			chatsecurity.encriptMessage(mes);
+		}
 		Sender::sendMessage(mes);
+
 	}
 
 	Sender::closeSocket();

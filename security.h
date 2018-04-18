@@ -21,6 +21,7 @@
 #include <array>
 #include <map>
 
+#include "Message.h"
 
 #ifndef SECURITY_H_
 #define SECURITY_H_
@@ -33,23 +34,33 @@ private:
 	std::string group;
 	int port;
 	std::map<std::string, std::string> keyTable;
-	std::string message, encriptedMessage, ivtemp;
 
-	void generateSessionKey();
-	void encodeMessage();
-	void decodeMessage();
+//	std::string message, encriptedMessage, ivtemp;
+
+
+//	void encodeMessage();
+//	void decodeMessage();
 
 public:
 	security();
 	~security();
-	void setInfo(std::string NAME, std::string ip, int port, std::string group);
-	void setEncriptedMessage(std::string message);
-	std::string getEncriptedMessage();
-	void generateKeyPair();
-	void senderHandshake();
-	void receiverHandshake(std::string data);
-	void encriptMessage();
-	void decriptMessage();
+//	void setInfo(std::string NAME, std::string ip, int port, std::string group);
+//	void setEncriptedMessage(std::string message);
+//	std::string getEncriptedMessage();
+//	void generateKeyPair();
+//	void senderHandshake();
+//	void receiverHandshake(std::string data);
+
+
+
+	void encriptMessage(Message& message);
+	void decriptMessage(Message& message);
+	std::string encriptData(std::string data, std::string key);
+	std::string decriptData(std::string data, std::string key);
+
+	void generateSessionKey();
+
+//	bool flag = false;
 };
 
 extern security chatsecurity;

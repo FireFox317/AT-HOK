@@ -18,8 +18,9 @@ public:
 	Routing();
 	virtual ~Routing();
 	Message process(std::string data);
-private:
 	void split(const std::string& s, const char* delim, std::vector<std::string>& v);
+private:
+
 	std::string timeStampTemp;
 };
 

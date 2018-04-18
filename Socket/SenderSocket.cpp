@@ -91,7 +91,7 @@ bool SenderSocket::sendMessage(std::string data){
 		return false;
 	}
 	free(c_data);
-	//ThreadSafe(std::cout << "Packet send! Size: " << len << " Data: " << data << std::endl;)
+	ThreadSafe(std::cout << "Packet send! Size: " << len << " Data: " << data << std::endl;)
 	return true;
 }
 
