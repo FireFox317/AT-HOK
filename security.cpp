@@ -102,15 +102,6 @@ void security::encriptMessage()
 void security::decriptMessage()
 {
 
-<<<<<<< HEAD
-	std::string sessionKey = keyTable[0][1];
-	CryptoPP::StringSource ss(sessionKey, true, new CryptoPP::HexEncoder(new CryptoPP::StringSink(sessionKey)));
-	const CryptoPP::byte* result = (const CryptoPP::byte*) sessionKey.data();
-	CryptoPP::SecByteBlock key(result, CryptoPP::AES::DEFAULT_KEYLENGTH);
-	CryptoPP::StringSource ss2(ivtemp, true, new CryptoPP::HexEncoder(new CryptoPP::StringSink(ivtemp)));
-	const CryptoPP::byte* result2 = (const CryptoPP::byte*) (ivtemp.substr(0, 6)).data();
-	CryptoPP::SecByteBlock iv(result2, ivtemp.size());
-=======
 	CryptoPP::byte sessionKeyByte[CryptoPP::AES::DEFAULT_KEYLENGTH];
 	CryptoPP::StringSource(keyTable["test"], true,
 			new CryptoPP::Base64Decoder(new CryptoPP::ArraySink(sessionKeyByte, CryptoPP::AES::DEFAULT_KEYLENGTH)));
@@ -118,7 +109,6 @@ void security::decriptMessage()
 	CryptoPP::byte ivByte[CryptoPP::AES::DEFAULT_BLOCKSIZE];
 	CryptoPP::StringSource(ivtemp, true,
 			new CryptoPP::Base64Decoder(new CryptoPP::ArraySink(ivByte, CryptoPP::AES::DEFAULT_KEYLENGTH)));
->>>>>>> 2a8b77ee0624243c6859ca181a04e30e97b099af
 
 	CryptoPP::CFB_Mode<CryptoPP::AES>::Decryption cfbDecryption;
 	cfbDecryption.SetKeyWithIV(sessionKeyByte, sizeof(sessionKeyByte), ivByte);
