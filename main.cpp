@@ -18,6 +18,8 @@
 #include "Message.h"
 #include "Socket/Receiver.h"
 
+#include "security.h"
+
 #include "Timer.h"
 
 #include "ThreadSafe.h"
@@ -26,6 +28,12 @@ int main(void){
 
 	std::thread send_thread(Sender::loop);
 	std::thread receive_thread(Receiver::loop);
+
+
+	chatsecurity.setInfo("hoi",IP,PORT,MULTIGROUP);
+
+	chatsecurity.generateKeyPair();
+	chatsecurity.senderHandshake();
 
 	std::string number;
 	std::cout << "Destination (255 is groupchat): ";

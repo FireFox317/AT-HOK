@@ -17,6 +17,8 @@
 #include "../Message.h"
 #include "../Routing.h"
 
+#include "../security.h"
+
 
 #include <thread>
 
@@ -40,6 +42,10 @@ namespace Receiver{
 
 			Message receivedMessage = routing.process(data);
 			if(receivedMessage.valid()){
+				if(receivedMessage.getData().substr(0,5) == "Hand/"){
+					chatsecurity.receiverHandshake(receivedMessage.getData());
+				}
+
 				std::cout << receivedMessage.getComputerNumber() << ">" << receivedMessage.getData() << std::endl;
 			}
 		}
