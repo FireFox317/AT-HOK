@@ -2,7 +2,7 @@
  * security.cpp
  *
  *  Created on: Apr 12, 2018
- *      Author: timon & Ivo
+ *      Author: niek & Ivo
  */
 
 #include "security.h"
@@ -40,12 +40,12 @@ void security::generateKeyPair()
 	CryptoPP::AutoSeededRandomPool rng;
 	CryptoPP::InvertibleRSAFunction privateKey;
 	privateKey.Initialize(rng, 1024);
-	CryptoPP::Base64Encoder privateKeySink(new CryptoPP::FileSink("/home/timon/Documents/myPrivateKey.txt"));
+	CryptoPP::Base64Encoder privateKeySink(new CryptoPP::FileSink("/home/niek/Documents/myPrivateKey.txt"));
 	privateKey.DEREncode(privateKeySink);
 	privateKeySink.MessageEnd();
 
 	CryptoPP::RSAFunction publicKey(privateKey);
-	CryptoPP::Base64Encoder publicKeySink(new CryptoPP::FileSink("/home/timon/Documents/myPublicKey.txt"));
+	CryptoPP::Base64Encoder publicKeySink(new CryptoPP::FileSink("/home/niek/Documents/myPublicKey.txt"));
 	publicKey.DEREncode(publicKeySink);
 	publicKeySink.MessageEnd();
 }
@@ -101,16 +101,6 @@ void security::encriptMessage()
 
 void security::decriptMessage()
 {
-
-<<<<<<< HEAD
-	std::string sessionKey = keyTable[0][1];
-	CryptoPP::StringSource ss(sessionKey, true, new CryptoPP::HexEncoder(new CryptoPP::StringSink(sessionKey)));
-	const CryptoPP::byte* result = (const CryptoPP::byte*) sessionKey.data();
-	CryptoPP::SecByteBlock key(result, CryptoPP::AES::DEFAULT_KEYLENGTH);
-	CryptoPP::StringSource ss2(ivtemp, true, new CryptoPP::HexEncoder(new CryptoPP::StringSink(ivtemp)));
-	const CryptoPP::byte* result2 = (const CryptoPP::byte*) (ivtemp.substr(0, 6)).data();
-	CryptoPP::SecByteBlock iv(result2, ivtemp.size());
-=======
 	CryptoPP::byte sessionKeyByte[CryptoPP::AES::DEFAULT_KEYLENGTH];
 	CryptoPP::StringSource(keyTable["test"], true,
 			new CryptoPP::Base64Decoder(new CryptoPP::ArraySink(sessionKeyByte, CryptoPP::AES::DEFAULT_KEYLENGTH)));
@@ -118,7 +108,6 @@ void security::decriptMessage()
 	CryptoPP::byte ivByte[CryptoPP::AES::DEFAULT_BLOCKSIZE];
 	CryptoPP::StringSource(ivtemp, true,
 			new CryptoPP::Base64Decoder(new CryptoPP::ArraySink(ivByte, CryptoPP::AES::DEFAULT_KEYLENGTH)));
->>>>>>> 2a8b77ee0624243c6859ca181a04e30e97b099af
 
 	CryptoPP::CFB_Mode<CryptoPP::AES>::Decryption cfbDecryption;
 	cfbDecryption.SetKeyWithIV(sessionKeyByte, sizeof(sessionKeyByte), ivByte);
@@ -149,7 +138,7 @@ void security::receiverHandshake()
 
 	std::string receivedTimestamp = encriptedMessage.substr(0, 19);
 
-	std::ofstream file("/home/timon/Documents/receivedPublicKey.txt");
+	std::ofstream file("/home/niek/Documents/receivedPublicKey.txt");
 	file << receivedPublicKey;
 	file.close();
 
@@ -189,7 +178,7 @@ void security::receiverHandshake()
 	encodeMessage();
 
 	std::string publicKey;
-	CryptoPP::FileSource("/home/timon/Documents/myPublicKey.txt", true, new CryptoPP::StringSink(publicKey));
+	CryptoPP::FileSource("/home/niek/Documents/myPublicKey.txt", true, new CryptoPP::StringSink(publicKey));
 
 	encriptedMessage.insert(0, "HandResp/" + publicKey + "/endofkey/");
 	encriptedMessage.append("/data/" + receivedTimestamp);
@@ -207,7 +196,7 @@ void security::senderHandshake()
 	encodeMessage();
 
 	std::string publicKey;
-	CryptoPP::FileSource("/home/timon/Documents/myPublicKey.txt", true, new CryptoPP::StringSink(publicKey));
+	CryptoPP::FileSource("/home/niek/Documents/myPublicKey.txt", true, new CryptoPP::StringSink(publicKey));
 
 	encriptedMessage.insert(0, "Hand/" + publicKey + "/endofkey/");
 
@@ -229,6 +218,7 @@ void security::senderHandshake()
 			break;
 		}
 	}
+	closeSocket();
 	receiver.detach();
 	encriptedMessage = encriptedMessage.substr(9, encriptedMessage.size());
 
@@ -237,7 +227,7 @@ void security::senderHandshake()
 
 	std::string receivedTimestamp = encriptedMessage.substr(0, 19);
 
-	std::ofstream file("/home/timon/Documents/receivedPublicKey.txt");
+	std::ofstream file("/home/niek/Documents/receivedPublicKey.txt");
 	file << receivedPublicKey;
 	file.close();
 
@@ -245,15 +235,15 @@ void security::senderHandshake()
 	encriptedMessage = encriptedMessage.substr(0, encriptedMessage.find("/data/"));
 
 	message.clear();
+	encriptedMessage.clear();
 
 	decodeMessage();
 
 	if (message == receivedTimestamp && std::to_string(timestamp) == returnedTimestamp)
 	{
-		std::cout << "check" << std::endl;
+		std::cout << "Correct message received, generating session key..." << std::endl;
 		generateSessionKey();
-		message.clear();
-		message = keyTable[0][1];
+		message = keyTable["test"];
 
 		CryptoPP::ByteQueue bytes;
 		CryptoPP::FileSource file("/home/niek/Documents/receivedPublicKey.txt", true, new CryptoPP::Base64Decoder);
@@ -262,6 +252,37 @@ void security::senderHandshake()
 		CryptoPP::RSA::PublicKey publicKey;
 		publicKey.Load(bytes);
 
+		CryptoPP::AutoSeededRandomPool rng;
+		CryptoPP::RSASS<CryptoPP::PSSR, CryptoPP::SHA1>::Signer signer(publicKey);
+
+			CryptoPP::StringSource ss1(message, true,
+					new CryptoPP::SignerFilter(rng, signer,
+									new CryptoPP::StringSink(encriptedMessage),
+									true
+									)
+							);
+		std::cout << "message = " << message << std::endl << std::endl;
+		std::cout << "encriptedMessage = " << encriptedMessage << std::endl;
+	}
+	else
+	{
+		std::cout << "Received an unexpected message, breaking the connection..." << std::endl;
+	}
+}
+
+void security::decodeMessage()
+{
+	CryptoPP::ByteQueue bytes;
+	CryptoPP::FileSource file("/home/niek/Documents/receivedPublicKey.txt", true, new CryptoPP::Base64Decoder);
+	file.TransferTo(bytes);
+	bytes.MessageEnd();
+	CryptoPP::RSA::PublicKey publicKey;
+	publicKey.Load(bytes);
+
+	std::cout << encriptedMessage << std::endl;
+
+	try
+	{
 		CryptoPP::RSASS<CryptoPP::PSSR, CryptoPP::SHA1>::Verifier verifier(publicKey);
 
 		CryptoPP::StringSource ss2(encriptedMessage, true,
@@ -271,33 +292,11 @@ void security::senderHandshake()
 									CryptoPP::SignatureVerificationFilter::THROW_EXCEPTION | CryptoPP::SignatureVerificationFilter::PUT_MESSAGE
 									)
 							);
-		std::cout << "message = " << message << std::endl;
-		std::cout << "encriptedMessage = " << encriptedMessage << std::endl;
 	}
-	else
+	catch (std::exception const& e)
 	{
-		std::cout << "Received an unexpected message..." << std::endl;
+		std::cout << "Exception: " << e.what() << std::endl;
 	}
-}
-
-void security::decodeMessage()
-{
-	CryptoPP::ByteQueue bytes;
-	CryptoPP::FileSource file("/home/timon/Documents/receivedPublicKey.txt", true, new CryptoPP::Base64Decoder);
-	file.TransferTo(bytes);
-	bytes.MessageEnd();
-	CryptoPP::RSA::PublicKey publicKey;
-	publicKey.Load(bytes);
-
-	CryptoPP::RSASS<CryptoPP::PSSR, CryptoPP::SHA1>::Verifier verifier(publicKey);
-
-	CryptoPP::StringSource ss2(encriptedMessage, true,
-				new CryptoPP::SignatureVerificationFilter(
-								verifier,
-								new CryptoPP::StringSink(message),
-								CryptoPP::SignatureVerificationFilter::THROW_EXCEPTION | CryptoPP::SignatureVerificationFilter::PUT_MESSAGE
-								)
-						);
 }
 
 void security::encodeMessage()
@@ -305,7 +304,7 @@ void security::encodeMessage()
 	CryptoPP::AutoSeededRandomPool rng;
 
 	CryptoPP::ByteQueue bytes;
-	CryptoPP::FileSource file("/home/timon/Documents/myPrivateKey.txt", true, new CryptoPP::Base64Decoder);
+	CryptoPP::FileSource file("/home/niek/Documents/myPrivateKey.txt", true, new CryptoPP::Base64Decoder);
 	file.TransferTo(bytes);
 	bytes.MessageEnd();
 	CryptoPP::RSA::PrivateKey privateKey;

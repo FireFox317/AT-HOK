@@ -37,6 +37,7 @@ int main(void)
 		chat1.sendSentMessage(IP, PORT, GROUP);
 	}
 	std::cout << "System: Left chatroom" << std::endl;
+	closeSocket();
 	receiverThread.detach();
 	return 0;
 }

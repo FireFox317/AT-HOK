@@ -6,6 +6,8 @@
 #include <iostream>
 #include "BlockingQueue.h"
 
+	int rsock;
+
 #ifdef _WIN32
 #include <winsock2.h>
 #include <ws2tcpip.h>
@@ -104,9 +106,15 @@ int get_receive_socket( std::string ip, uint16_t port, std::string group ) {
 	return retsock;
 }
 
+void closeSocket()
+{
+	close(rsock);
+}
+
+
 int receivePacket(std::string ip, int port, std::string group, BlockingQueue<std::string>* q) {
 
-	int rsock;
+
 
 	rsock = get_receive_socket(ip, port, group);
 
