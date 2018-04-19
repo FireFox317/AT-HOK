@@ -75,6 +75,9 @@ void Security::loadKeys(){
 
 void Security::setupConnection(std::string ip){
 	{
+		if(sessionKeyList.find(ip) != sessionKeyList.end()){
+			return;
+		}
 		using namespace CryptoPP;
 
 		AutoSeededRandomPool rng;
@@ -98,7 +101,7 @@ void Security::setupConnection(std::string ip){
 		   ) // PK_EncryptorFilter
 		); // StringSource
 
-		////////////////////////////////////////////////
+ 		////////////////////////////////////////////////
 		// Sign and Encode
 		RSASSA_PKCS1v15_SHA_Signer signer(privateKey);
 

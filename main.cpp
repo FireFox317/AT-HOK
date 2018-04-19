@@ -127,6 +127,7 @@ void MainFrame::setOneToOne(wxCommandEvent &event){
 		Sender::sendMessage(Message(MULTIGROUP,"Left the groupchat."));
 		storage.setMode("1To1: " + ip);
 
+
 		chatsecurity.setupConnection(ip);
 	}
 }
