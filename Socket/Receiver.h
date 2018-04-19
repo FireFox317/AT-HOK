@@ -44,7 +44,7 @@ namespace Receiver{
 		Routing routing;
 		while (1) {
 			std::string data = q->pop();
-
+			std::cout << "Datatest: " << data << std::endl;
 			Message receivedMessage = routing.process(data);
 			if(receivedMessage.valid()){
 				if(receivedMessage.checkMultigroup()){

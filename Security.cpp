@@ -179,17 +179,17 @@ std::string Security::encriptData(std::string data, std::string key)
 
 	std::string ivString;
 	CryptoPP::StringSource(iv, sizeof(iv), true,
-			new CryptoPP::Base64Encoder(new CryptoPP::StringSink(ivString)));
+			new CryptoPP::StringSink(ivString));
 
 	CryptoPP::byte sessionKeyByte[CryptoPP::AES::DEFAULT_KEYLENGTH];
 	CryptoPP::StringSource(key, true,
-				new CryptoPP::Base64Decoder(new CryptoPP::ArraySink(sessionKeyByte, CryptoPP::AES::DEFAULT_KEYLENGTH)));
+				new CryptoPP::ArraySink(sessionKeyByte, CryptoPP::AES::DEFAULT_KEYLENGTH));
 
 	CryptoPP::CFB_Mode<CryptoPP::AES>::Encryption cfbEncryption;
 	cfbEncryption.SetKeyWithIV(sessionKeyByte, sizeof(sessionKeyByte), iv);
 	CryptoPP::StringSource ss1( data, true,
 	        new CryptoPP::StreamTransformationFilter( cfbEncryption,
-	            new CryptoPP::Base64Encoder( new CryptoPP::StringSink( encriptedMessage ))
+	             new CryptoPP::StringSink( encriptedMessage )
 	        ) // StreamTransformationFilter
 	    ); // StringSource
 
@@ -203,33 +203,42 @@ std::string Security::decriptData(std::string data, std::string key)
 	std::string ivString = data.substr(0, data.find("/endIV/"));
 	std::string encriptedMessage = data.substr(data.find("/endIV/") + 7, data.size() );
 
+	std::cout << "Ivstring: " << ivString << std::endl;
+	std::cout << "encriptedMessage: " << encriptedMessage << std::endl;
+
+	std::cout << "Sessionkey to decript: " << key << std::endl;
+
 	CryptoPP::byte sessionKeyByte[CryptoPP::AES::DEFAULT_KEYLENGTH];
 	CryptoPP::StringSource(key, true,
-			new CryptoPP::Base64Decoder(new CryptoPP::ArraySink(sessionKeyByte, CryptoPP::AES::DEFAULT_KEYLENGTH)));
+			new CryptoPP::ArraySink(sessionKeyByte, CryptoPP::AES::DEFAULT_KEYLENGTH));
 
 	CryptoPP::byte ivByte[CryptoPP::AES::DEFAULT_BLOCKSIZE];
 	CryptoPP::StringSource(ivString, true,
-			new CryptoPP::Base64Decoder(new CryptoPP::ArraySink(ivByte, CryptoPP::AES::DEFAULT_KEYLENGTH)));
+			new CryptoPP::ArraySink(ivByte, CryptoPP::AES::DEFAULT_KEYLENGTH));
 
 	CryptoPP::CFB_Mode<CryptoPP::AES>::Decryption cfbDecryption;
 	cfbDecryption.SetKeyWithIV(sessionKeyByte, sizeof(sessionKeyByte), ivByte);
 
-	std::string decoded;
-	CryptoPP::StringSource ss(encriptedMessage, true,
-	    new CryptoPP::Base64Decoder(
-	        new CryptoPP::StringSink(decoded)
-	    ) // Base64Decoder
-	); // StringSource
+//	std::string decoded;
+//	CryptoPP::StringSource ss(encriptedMessage, true,
+//	    new CryptoPP::Base64Decoder(
+//	        new CryptoPP::StringSink(decoded)
+//	    ) // Base64Decoder
+//	); // StringSource
+
+
 
 	std::string recovered;
-	CryptoPP::StringSource ss3(decoded , true,
+	CryptoPP::StringSource ss3(encriptedMessage , true,
         new CryptoPP::StreamTransformationFilter( cfbDecryption,
             new CryptoPP::StringSink( recovered )
         ) // StreamTransformationFilter
     ); // StringSource
 
-	return recovered;
+
 //	std::cout << "Message: " << recovered << std::endl;
+	return recovered;
+
 
 }
 
