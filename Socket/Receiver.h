@@ -47,7 +47,6 @@ namespace Receiver{
 
 			Message receivedMessage = routing.process(data);
 			if(receivedMessage.valid()){
-				std::cout << "Test: " << receivedMessage.getData() << std::endl;
 				if(receivedMessage.checkMultigroup()){
 					storage.addGroupChatMessage(receivedMessage.getComputerNumber() + " > " + receivedMessage.getData());
 					{
@@ -56,11 +55,16 @@ namespace Receiver{
 					}
 
 				} else {
-					chatsecurity.decriptMessage(receivedMessage);
-					storage.addOneToOneMessage(receivedMessage.getSourceIP(), receivedMessage.getComputerNumber() + " > " + receivedMessage.getData());
-					{
-						MessageEvent* event = new MessageEvent(MY_EVENT, wxID_ANY, receivedMessage);
-					    wxQueueEvent(wxGetApp().mainFrame->GetEventHandler(),event);
+					if(receivedMessage.getData().substr(0,11) == "SessionKey:"){
+						chatsecurity.acceptConnection(receivedMessage);
+					} else {
+
+						chatsecurity.decriptMessage(receivedMessage);
+						storage.addOneToOneMessage(receivedMessage.getSourceIP(), receivedMessage.getComputerNumber() + " > " + receivedMessage.getData());
+						{
+							MessageEvent* event = new MessageEvent(MY_EVENT, wxID_ANY, receivedMessage);
+							wxQueueEvent(wxGetApp().mainFrame->GetEventHandler(),event);
+						}
 					}
 				}
 			}

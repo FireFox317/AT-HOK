@@ -27,6 +27,10 @@ bool MainApp::OnInit(){
 
 	Sender::sendMessage(Message(MULTIGROUP,"Joined the groupchat."));
 
+//	chatsecurity.generateKeyPair();
+
+	chatsecurity.loadKeys();
+
 	mainFrame = new MainFrame(wxT("AD-HOC Chatting"), wxDefaultPosition, wxSize(500,400));
 	mainFrame->Show(true);
 	SetTopWindow(mainFrame);
@@ -122,6 +126,8 @@ void MainFrame::setOneToOne(wxCommandEvent &event){
 		SetStatusText("Mode: One to one -> Computer number: " + test->GetValue());
 		Sender::sendMessage(Message(MULTIGROUP,"Left the groupchat."));
 		storage.setMode("1To1: " + ip);
+
+		chatsecurity.setupConnection(ip);
 	}
 }
 

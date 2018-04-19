@@ -16,42 +16,154 @@
 #include <cryptopp/aes.h>
 #include <cryptopp/hex.h>
 
+#include "Socket/Sender.h"
+
 Security::Security() {
 	// TODO Auto-generated constructor stub
-	keyTable["192.168.5.3"] = "ETM0x1E2mX/bwBaNpzJLCQAAAAAAAAAAQRIAAAAAAAA=";
-	keyTable["192.168.5.1"] = "ETM0x1E2mX/bwBaNpzJLCQAAAAAAAAAAQRIAAAAAAAA=";
+
 }
 
 Security::~Security() {
 	// TODO Auto-generated destructor stub
 }
 
+void Security::generateKeyPair(){
+	std::vector<std::string> ipAddresses = {"192.168.5.1","192.168.5.2","192.168.5.3","192.168.5.4"};
+	for(auto ip: ipAddresses){
+		CryptoPP::AutoSeededRandomPool rng;
+			CryptoPP::InvertibleRSAFunction params;
+			params.GenerateRandomWithKeySize(rng, 3072);
+
+			CryptoPP::RSA::PrivateKey privateKey1(params);
+			CryptoPP::RSA::PublicKey publicKey1(params);
+
+			std::string privateKeytoPrint;
+			std::string publicKeytoPrint;
+
+			CryptoPP::Base64Encoder privateKeySink(new CryptoPP::FileSink(std::string("privateKey" + ip + ".txt").c_str()));
+			privateKey1.DEREncode(privateKeySink);
+			privateKeySink.MessageEnd();
+
+			CryptoPP::Base64Encoder publicKeySink(new CryptoPP::FileSink(std::string("publicKey" + ip + ".txt").c_str()));
+			publicKey1.DEREncode(publicKeySink);
+			publicKeySink.MessageEnd();
+
+
+	}
+
+}
+
+
+void Security::loadKeys(){
+	std::vector<std::string> ipAddresses = {"192.168.5.1","192.168.5.2","192.168.5.3","192.168.5.4"};
+	for(auto ip : ipAddresses){
+		CryptoPP::ByteQueue bytes;
+		CryptoPP::FileSource file(std::string("Keys/publicKey" + ip + ".txt").c_str(), true, new CryptoPP::Base64Decoder);
+		file.TransferTo(bytes);
+		bytes.MessageEnd();
+		CryptoPP::RSA::PublicKey publicKey;
+		publicKey.Load(bytes);
+		publicKeyList[ip] = publicKey;
+	}
+
+	CryptoPP::ByteQueue bytes;
+	CryptoPP::FileSource file("Keys/privateKey192.168.5.1.txt", true, new CryptoPP::Base64Decoder);
+	file.TransferTo(bytes);
+	bytes.MessageEnd();
+	privateKey.Load(bytes);
+}
+
+void Security::setupConnection(std::string ip){
+	{
+		using namespace CryptoPP;
+
+		AutoSeededRandomPool rng;
+		RSAES_OAEP_SHA_Encryptor encryptor(publicKeyList[ip]);
+
+		CryptoPP::SecByteBlock key (CryptoPP::AES::DEFAULT_KEYLENGTH);
+		rng.GenerateBlock(key, key.size());
+
+		std::string sessionKey;
+		CryptoPP::StringSource(key, sizeof(key), true,
+				new CryptoPP::StringSink(sessionKey));
+
+		std::cout << "SessionKey: " << sessionKey << std::endl;
+		sessionKeyList[ip] = sessionKey;
+
+		std::string cipherSessionKey;
+
+		StringSource ss1(sessionKey, true,
+			new PK_EncryptorFilter(rng, encryptor,
+				new StringSink(cipherSessionKey)
+		   ) // PK_EncryptorFilter
+		); // StringSource
+
+		////////////////////////////////////////////////
+		// Sign and Encode
+		RSASSA_PKCS1v15_SHA_Signer signer(privateKey);
+
+		std::string to_send;
+
+		StringSource ss2(cipherSessionKey, true,
+			new SignerFilter(rng, signer,
+				new Base64Encoder(new StringSink(to_send)), true
+		   ) // SignerFilter
+		); // StringSource
+
+		std::cout << "To send: " << to_send << std::endl;
+		Sender::sendMessage(Message(ip,"SessionKey:" + to_send));
+	}
+}
+
+
+void Security::acceptConnection(Message message){
+	{
+		using namespace CryptoPP;
+
+		AutoSeededRandomPool rng;
+		////////////////////////////////////////////////
+		// Verify and Recover
+		RSASSA_PKCS1v15_SHA_Verifier verifier(publicKeyList[message.getSourceIP()]);
+
+		std::string decoded;
+		StringSource ss(message.getData().substr(11,message.getData().size()), true,
+			new Base64Decoder(
+				new StringSink(decoded)
+			) // Base64Decoder
+		); // StringSource
+
+		std::string encryptedSessionKey;
+
+		StringSource ss3(decoded, true,
+			new SignatureVerificationFilter(
+				verifier, new StringSink(encryptedSessionKey),
+				SignatureVerificationFilter::THROW_EXCEPTION | SignatureVerificationFilter::PUT_MESSAGE
+		   ) // SignatureVerificationFilter
+		); // StringSource
+
+		RSAES_OAEP_SHA_Decryptor decryptor(privateKey);
+
+		std::string sessionKey;
+		StringSource ss4(encryptedSessionKey, true,
+			new PK_DecryptorFilter(rng, decryptor,
+				new StringSink(sessionKey)
+		   ) // PK_DecryptorFilter
+		); // StringSource
+
+		std::cout << "SessionKey: " << sessionKey << std::endl;
+		sessionKeyList[message.getSourceIP()] = sessionKey;
+	}
+}
+
 void Security::encriptMessage(Message& message){
-	std::string sessionKey = keyTable[message.getDestinationIP()];
+	std::string sessionKey = sessionKeyList[message.getDestinationIP()];
 	message.setData(encriptData(message.getData(),sessionKey));
 }
 
 void Security::decriptMessage(Message& message){
-	std::string sessionKey = keyTable[message.getSourceIP()];
+	std::string sessionKey = sessionKeyList[message.getSourceIP()];
 	message.setData(decriptData(message.getData(),sessionKey));
 }
-
-
-
-void Security::generateSessionKey()
-{
-	CryptoPP::AutoSeededRandomPool rnd;
-	CryptoPP::SecByteBlock key (CryptoPP::AES::DEFAULT_KEYLENGTH);
-	rnd.GenerateBlock(key, key.size());
-
-	std::string sessionKey;
-	CryptoPP::StringSource(key, sizeof(key), true,
-			new CryptoPP::Base64Encoder(new CryptoPP::StringSink(sessionKey)));
-
-	std::cout << "SessionKey: " << sessionKey << std::endl;
-
-}
-
 
 
 std::string Security::encriptData(std::string data, std::string key)
