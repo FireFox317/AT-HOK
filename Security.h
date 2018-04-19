@@ -19,6 +19,8 @@
 #include <cryptopp/base64.h>
 #include <cryptopp/files.h>
 
+#include "Socket/ip_config.h"
+
 
 #include "Message.h"
 
@@ -30,6 +32,8 @@ public:
 	void loadKeys();
 	void setupConnection(std::string ip);
 	void acceptConnection(Message message);
+	void endConnection();
+	void deleteEntry(std::string ip);
 
 	void generateKeyPair();
 
@@ -43,19 +47,8 @@ private:
 	CryptoPP::RSA::PrivateKey privateKey;
 
 	std::map<std::string, std::string> sessionKeyList;
+	std::string sourceIP = IP;
 
-
-
-
-
-
-
-
-//
-//	void generateSessionKey();
-//private:
-//	std::map<std::string, std::string> publicKeyList;
-//	std::map<std::string, std::string> sessionKeyList;
 };
 
 extern Security chatsecurity;

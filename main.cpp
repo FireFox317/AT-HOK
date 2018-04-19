@@ -38,6 +38,9 @@ bool MainApp::OnInit(){
 }
 
 int MainApp::OnExit(){
+		chatsecurity.endConnection();
+
+
 		Sender::closeSocket();
 		Receiver::closeSocket();
 
@@ -128,10 +131,7 @@ void MainFrame::setOneToOne(wxCommandEvent &event){
 		storage.setMode("1To1: " + ip);
 
 		chatsecurity.setupConnection(ip);
-		Message test(ip,"test");
-		chatsecurity.encriptMessage(test);
-		chatsecurity.decriptMessage(test);
-		std::cout << "testtest: " << test.getData() << std::endl;
+
 	}
 }
 

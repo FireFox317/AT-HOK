@@ -67,7 +67,7 @@ void Security::loadKeys(){
 	}
 
 	CryptoPP::ByteQueue bytes;
-	CryptoPP::FileSource file("Keys/privateKey192.168.5.1.txt", true, new CryptoPP::Base64Decoder);
+	CryptoPP::FileSource file(std::string("Keys/privateKey" + sourceIP + ".txt").c_str(), true, new CryptoPP::Base64Decoder);
 	file.TransferTo(bytes);
 	bytes.MessageEnd();
 	privateKey.Load(bytes);
@@ -168,6 +168,14 @@ void Security::decriptMessage(Message& message){
 	message.setData(decriptData(message.getData(),sessionKey));
 }
 
+void Security::endConnection(){
+	Sender::sendMessage(Message(MULTIGROUP,"/LEAVING/"));
+}
+
+void Security::deleteEntry(std::string ip){
+	sessionKeyList.erase(sessionKeyList.find(ip));
+}
+
 
 std::string Security::encriptData(std::string data, std::string key)
 {
@@ -203,11 +211,6 @@ std::string Security::decriptData(std::string data, std::string key)
 	std::string ivString = data.substr(0, data.find("/endIV/"));
 	std::string encriptedMessage = data.substr(data.find("/endIV/") + 7, data.size() );
 
-	std::cout << "Ivstring: " << ivString << std::endl;
-	std::cout << "encriptedMessage: " << encriptedMessage << std::endl;
-
-	std::cout << "Sessionkey to decript: " << key << std::endl;
-
 	CryptoPP::byte sessionKeyByte[CryptoPP::AES::DEFAULT_KEYLENGTH];
 	CryptoPP::StringSource(key, true,
 			new CryptoPP::ArraySink(sessionKeyByte, CryptoPP::AES::DEFAULT_KEYLENGTH));
@@ -218,14 +221,6 @@ std::string Security::decriptData(std::string data, std::string key)
 
 	CryptoPP::CFB_Mode<CryptoPP::AES>::Decryption cfbDecryption;
 	cfbDecryption.SetKeyWithIV(sessionKeyByte, sizeof(sessionKeyByte), ivByte);
-
-//	std::string decoded;
-//	CryptoPP::StringSource ss(encriptedMessage, true,
-//	    new CryptoPP::Base64Decoder(
-//	        new CryptoPP::StringSink(decoded)
-//	    ) // Base64Decoder
-//	); // StringSource
-
 
 
 	std::string recovered;

@@ -44,10 +44,13 @@ namespace Receiver{
 		Routing routing;
 		while (1) {
 			std::string data = q->pop();
-			std::cout << "Datatest: " << data << std::endl;
+
 			Message receivedMessage = routing.process(data);
 			if(receivedMessage.valid()){
 				if(receivedMessage.checkMultigroup()){
+					if(receivedMessage.getData() == "/LEAVING/"){
+						chatsecurity.deleteEntry(receivedMessage.getSourceIP());
+					}
 					storage.addGroupChatMessage(receivedMessage.getComputerNumber() + " > " + receivedMessage.getData());
 					{
 						MessageEvent* event = new MessageEvent(MY_EVENT, wxID_ANY, receivedMessage);
