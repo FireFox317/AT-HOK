@@ -16,7 +16,10 @@
 
 #include "../Message.h"
 #include "../Routing.h"
+#include "../Storage.h"
 
+#include "../Security.h"
+#include "../main.h"
 
 #include <thread>
 
@@ -25,12 +28,16 @@ namespace Receiver{
 	ReceiverSocket* receiverSocket;
 	std::thread* receiverThread;
 
+
 	void closeSocket(){
 		receiverSocket->closeSocket();
 		receiverThread->detach();
 		delete receiverThread;
 		delete receiverSocket;
 	}
+
+
+
 
 	void mainReceiveLoop(BlockingQueue< std::string > *q)
 	{
@@ -40,7 +47,29 @@ namespace Receiver{
 
 			Message receivedMessage = routing.process(data);
 			if(receivedMessage.valid()){
-				std::cout << receivedMessage.getComputerNumber() << ">" << receivedMessage.getData() << std::endl;
+				if(receivedMessage.checkMultigroup()){
+					if(receivedMessage.getData() == "/LEAVING/"){
+						chatsecurity.deleteEntry(receivedMessage.getSourceIP());
+					}
+					storage.addGroupChatMessage(receivedMessage.getComputerNumber() + " > " + receivedMessage.getData());
+					{
+						MessageEvent* event = new MessageEvent(MY_EVENT, wxID_ANY, receivedMessage);
+					    wxQueueEvent(wxGetApp().mainFrame->GetEventHandler(),event);
+					}
+
+				} else {
+					if(receivedMessage.getData().substr(0,11) == "SessionKey:"){
+						chatsecurity.acceptConnection(receivedMessage);
+					} else {
+
+						chatsecurity.decriptMessage(receivedMessage);
+						storage.addOneToOneMessage(receivedMessage.getSourceIP(), receivedMessage.getComputerNumber() + " > " + receivedMessage.getData());
+						{
+							MessageEvent* event = new MessageEvent(MY_EVENT, wxID_ANY, receivedMessage);
+							wxQueueEvent(wxGetApp().mainFrame->GetEventHandler(),event);
+						}
+					}
+				}
 			}
 		}
 	}

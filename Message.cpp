@@ -53,10 +53,18 @@ std::string Message::getTimestamp(){
 	return timeStamp;
 }
 
+bool Message::checkMultigroup(){
+	return destinationIP == MULTIGROUP;
+}
+
 std::string Message::getComputerNumber(){
 	std::vector<std::string> ip;
 	split(sourceIP,".",ip);
 	return ip[3];
+}
+
+std::string Message::getSourceIP(){
+	return sourceIP;
 }
 
 std::string Message::getData(){
@@ -65,6 +73,14 @@ std::string Message::getData(){
 
 bool Message::valid(){
 	return !(destinationIP == "empty" && data == "empty" && timeStamp == "empty");
+}
+
+void Message::setData(std::string _data){
+	data = _data;
+}
+
+std::string Message::getDestinationIP(){
+	return destinationIP;
 }
 
 Message::~Message() {

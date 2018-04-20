@@ -14,12 +14,15 @@ std::atomic<bool> Sender::wantToSend(false);
 std::atomic<bool> Sender::finished(false);
 std::string Sender::message;
 std::mutex Sender::message_mutex;
+bool Sender::isMulticasting = false;
 
 void Sender::sendMessage(Message message){
 		std::lock_guard<std::mutex> lk(Sender::message_mutex);
 		Sender::message = message.toString();
 		Sender::wantToSend = true;
-		rel.setSendMessage(message);
+		if(!message.checkMultigroup() && !rel.retransmission && !(message.getData() == "ACK") && !isMulticasting){
+			rel.setSendMessage(message);
+		}
 	}
 
 void Sender::closeSocket(){

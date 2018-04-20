@@ -37,12 +37,20 @@ Message Routing::process(std::string data){
 		//ThreadSafe(std::cout << "Data: " << data << std::endl;)
 		if(timeStamp == timeStampTemp){
 			// received the message before
-			ThreadSafe(std::cout << "Received this message before" << std::endl;)
+			if(message == "ACK"){
+				// already received the ack
+				ThreadSafe(std::cout << "Already received the ACK before" << std::endl;)
+			} else {
+				ThreadSafe(std::cout << "Received the message before, but still send a ACK" << std::endl;)
+				Message ack(sourceIP, timeStamp, "ACK");
+				Sender::sendMessage(ack);
+			}
 		} else {
 			timeStampTemp = timeStamp;
 			if(message == "ACK"){
 				rel.checkTimestamp(timeStamp);
 			} else {
+				ThreadSafe(std::cout << "Received message and send ACK back" << std::endl;)
 				Message ack(sourceIP, timeStamp, "ACK");
 				Sender::sendMessage(ack);
 				return Message(sourceIP, destinationIP, timeStamp, message);
@@ -54,8 +62,9 @@ Message Routing::process(std::string data){
 	} else if (destinationIP == MULTIGROUP){
 		// Group message
 		if(timeStamp == timeStampTemp){
-			ThreadSafe(std::cout << "Already received the message" << std::endl;)
+			ThreadSafe(std::cout << "Already received the groupmessage" << std::endl;)
 		} else {
+			ThreadSafe(std::cout << "Received groupmessage and send it again" << std::endl;)
 			timeStampTemp = timeStamp;
 			Sender::sendMessage(Message(sourceIP, destinationIP, timeStamp, message));
 			return Message(sourceIP, destinationIP, timeStamp, message);
@@ -65,7 +74,10 @@ Message Routing::process(std::string data){
 			ThreadSafe(std::cout << "Received a retransmitted message" << std::endl;)
 		} else {
 			timeStampTemp = timeStamp;
+			Sender::isMulticasting = true;
 			Sender::sendMessage(Message(sourceIP, destinationIP, timeStamp, message));
+			Sender::isMulticasting = false;
+
 			ThreadSafe(std::cout << "Retransmitted the message" << std::endl;)
 		}
 	}
@@ -74,13 +86,17 @@ Message Routing::process(std::string data){
 
 void Routing::split(const std::string& s, const char* delim, std::vector<std::string>& v) {
 	auto i = 0;
+	int j = 0;
 	auto pos = s.find(delim);
 	while (pos != std::string::npos) {
 	  v.push_back(s.substr(i, pos-i));
 	  i = ++pos;
 	  pos = s.find(delim, pos);
 
-	  if (pos == std::string::npos)
-		 v.push_back(s.substr(i, s.length()));
+	  if (pos == std::string::npos || j == 2){
+		  v.push_back(s.substr(i, s.length()));
+		  pos = std::string::npos;
+	  }
+		 j++;
 	}
 }
