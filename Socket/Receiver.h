@@ -19,7 +19,7 @@
 #include "../Storage.h"
 
 #include "../Security.h"
-#include "../main.h"
+#include "../GUI.h"
 
 #include <thread>
 

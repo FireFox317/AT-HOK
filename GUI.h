@@ -5,8 +5,8 @@
  *      Author: timon
  */
 
-#ifndef MAIN_H_
-#define MAIN_H_
+#ifndef GUI_H_
+#define GUI_H_
 
 #include <thread>
 #include "Socket/ip_config.h"
@@ -79,4 +79,4 @@ wxDECLARE_EVENT(MY_EVENT, MessageEvent);
 
 
 
-#endif /* MAIN_H_ */
+#endif /* GUI_H_ */
